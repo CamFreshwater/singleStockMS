@@ -1,0 +1,28 @@
+# Model forwarded to C. Freshwater by E. Hertz (PSF) on April 13, 2018; author likely
+# B. Connors
+
+model{
+
+#Hyper priors
+mu_a~dnorm(0.5,1.0E-6)
+tau_a~dgamma(0.5,0.5)
+sd_a<-pow(tau_a,-0.5)
+
+for(i in 1:Nstocks) {   
+        a[i]~dlnorm(mu_a,tau_a) #Hyper distribution on alpha
+        prtaub[i] <- 1/(prCV[i]^2) #added by CF
+        prmub[i] <- log(1/prSmax[i]) #added by CF 
+        b[i]~dlnorm(prmub[i],prtaub[i]) #prior on stock-independent b
+
+        sd[i]~dunif(0.05,10)
+        tau[i]<-pow(sd[i],-0.5) 
+
+}
+
+for(i in 1:Nstocks) {   
+        for(j in 1:Nyrs[i]) {
+                LNRS[i,j]~dnorm(Pred[i,j],tau[i])
+                Pred[i,j]<-a[i]-b[i]*S[i,j]
+        }
+}
+}

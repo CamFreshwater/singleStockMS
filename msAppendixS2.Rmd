@@ -1,0 +1,171 @@
+---
+header-includes:
+  - \usepackage{caption}
+output:
+  word_document:
+    fig_caption: yes
+    reference_docx: templates/blankMS.docx
+  # bookdown::pdf_document2:
+  #   fig_caption: yes
+  #   latex_engine: pdflatex
+    # includes:
+    #   in_header: preamble-latex.tex
+csl: csl/ecology.csl
+link-citations: no
+bibliography: bib/ms_singleStock.bib
+---
+
+```{r setup, echo=FALSE, cache=FALSE, message=FALSE, results='hide', warning=FALSE}
+# adjust as desired:
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  fig.path = if (knitr:::is_latex_output()) "knitr-figs-pdf/" else "knitr-figs-docx/",
+  cache.path = if (knitr:::is_latex_output()) "knitr-cache-tex/" else "knitr-cache-docx/",
+  fig.asp = 0.618,
+  fig.width = 9,
+  out.width = "6in",
+  echo = FALSE,
+#  autodep = TRUE,
+#  cache = TRUE,
+  cache.comments = FALSE,
+  dev = if (knitr:::is_latex_output()) "png" else "png",
+  dpi = 180,
+  fig.align = "center",
+  fig.pos = "htb"
+)
+options(kableExtra.latex.load_packages = FALSE)
+```
+
+
+```{r loadData, include=FALSE}
+library(csasdown)
+library(here)
+library(tidyverse)
+library(samSim)
+library(knitr)
+library(kableExtra)
+
+simPar <- read.csv(here::here("data", "manProcScenarios",
+                        "fraserMPInputs_varyAllocationSens.csv"), 
+                   stringsAsFactors = F) %>% 
+  mutate(nameMP = paste(propMixHigh, singleHCR, "_", harvContRule, sep = ""))
+cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
+
+# Focal CUs and CU-specific PMs
+summCUs <- cuPar %>% 
+  filter(manUnit == "Summ") %>% 
+  mutate(abbStkName = abbreviate(stkName, minlength = 4)) %>% 
+  select(abbStkName) %>% 
+  unlist()
+
+# Summary sim data
+plotDat <- read.csv(here::here("outputs", "generatedData", 
+                               "sensAnalysisSummaryData.rds")) %>% 
+  filter(mp == "0.5retro_genPA") %>% 
+  mutate(scen = fct_relevel(scen, "rho", after = Inf)) %>% 
+  mutate(scen = fct_relevel(scen, "enRouteSig", after = Inf)) 
+  
+```
+
+
+##Multistock fishery harvest control rule##
+
+_Move from main text based on co-author comments._
+
+##En-route mortality##
+
+_Move from main text based on co-author comments._
+
+##Stochastic parameter sensitivity analyses##
+
+We used local sensitivity analyses to evaluate how our conclusions may be impacted by the magnitude of interannual variation in stochastic parameters and temporal autocorrelation. For each parameter we selected upper and lower values (bounding plausible ranges; Table S1), held the remaining parameters constant, and compared distributions of performance metrics generated from 1500 Monte Carlo trials. We present results from a management procedure specifying equal allocations between mixed- and single-stock fisheries for all sensitivity scenarios. Additional analyses indicated that increasing the mixed-stock allocation increased the effect of mixed-stock fishery outcome uncertainty, while reducing the effect of single-stock outcome uncertainty. The opposite pattern occurred when single-stock fishery allocations were increased. Since the overall patterns remained similar these results are not shown.
+
+To evaluate interannual variability in age-at-maturity and en-route mortality we applied scalars to $\gamma$ and $\sigma_{mort}$ cosnsitent with stock-specific differences (i.e. were within on standard deviation of observed values; Table S2). To evaluate the sensitivity of fishery-specific outcome uncertainty we set the lower value for $\sigma_{out}$ at zero (i.e. no deviations between target and realized catch) and the maximum value at 0.15, an arbitrary value resulting in ~20% of harvest rate deviations exceeding the maxmimum deviation observed among all Fraser River sockeye salmon management units between 2006 and 2017. Conversely, the reference $\sigma_{out}$ (0.07) results in ~0.2% of deviations exceeding the maximum observed. We applied the same minimum and maximum values to both single- and mixed-stock fisheries, but did so independently. Finally, we set the minimum temporal autocorrelation $\tau$ value at zero and the maximum at the largest estimated value from a study of Alaskan sockeye salmon [@Peterman2003].
+
+```{r tableS2, results="asis"}
+pars <- c("$\\gamma$", "$\\sigma_{out}$", "$\\sigma_{mort}$", "$\\tau$") 
+refVals <- c(paste("stock-specific (range ", min(cuPar$tauCycAge), "-",
+                max(cuPar$tauCycAge), ")", sep = ""),
+          0.07,
+          paste("stock-specific (range ", round(min(cuPar$sdDBE), 2), "-",
+                round(max(cuPar$sdDBE), 2), ")", sep = ""),
+          0.2)
+minVals <- c("0.5 * ref. $\\gamma$", 0, "0.75 * ref. $\\sigma_{mort}$", 0)
+maxVals <- c("1.25 * ref. $\\gamma$", 0.15, "1.25 * ref. $\\sigma_{mort}$",
+             0.72)
+
+sensPars <- data.frame(
+  Parameter = pars,
+  Reference = refVals,
+  Minimum = minVals,
+  Maximum = maxVals
+)
+
+csas_table(sensPars,
+  caption = "Table S1. Parameter values for components of operating model and management procedure that were adjusted in local sensitivity analyses.",
+  font_size = 12,
+  col_names = c("Parameter", "Ref. Value", "Min. Value", "Max. Value")
+)
+```
+
+
+```{r generateData, include=FALSE}
+vars <- c("medRecRY", "medSpawners", "ppnCULower", "medCatch", "stabilityCatch")
+
+agDotPlotList <- lapply(seq_along(vars), function(x) {
+  dum <- plotDat %>% 
+    filter(var == vars[x],
+           !scen == "genericRetro") 
+  dumRef <- plotDat %>% 
+    filter(var == vars[x],
+           scen == "genericRetro")
+  
+  p <- ggplot(dum, aes(x = scen, y = avg, ymin = lowQ, ymax = highQ,
+                       fill = om)) +
+    labs(x = "", y = unique(dum$labelledVar)) +
+    geom_pointrange(shape = 21, fatten = 4, size = 1,
+                    position = position_dodge(width = 0.65)) +
+    geom_hline(dumRef, mapping = aes(yintercept = avg), linetype = 1) +
+    geom_hline(dumRef, mapping = aes(yintercept = lowQ), linetype = 2, 
+               size = 0.5) +
+    geom_hline(dumRef, mapping = aes(yintercept = highQ), linetype = 2, 
+               size = 0.5) +
+    scale_x_discrete(labels = c("ageTau" = "Mat.\nAge", 
+                                "mixOU" = "Mixed\nOU", 
+                                "singOU" = "Single\nOU",
+                                "rho" = "Temp.\nAuto.", 
+                                "enRouteSig" = "Mig.\nMort.")) + 
+    scale_fill_discrete(name = "Operating\nModel",
+                      labels = c("High\nVariability", "Low\nVariability"))
+  if (unique(dum$pmClass) == "catch") {
+    p <- p +
+      theme_sleekX(position = "bottom", axisSize = 11, legendSize = 1.1)
+  } else {
+    p <- p +
+      theme_sleekX(position = "top", axisSize = 11, legendSize = 1.1)
+  }
+  return(p)
+})
+```
+
+The effects of greater variability differed among stochastic parameters and performance metrics. Greater outcome uncertainty within mixed-stock fisheries had the most consistent negative impact, with larger deviations between realized and target catch resulting in declines in all performance metrics (Fig. S1). Such patterns are consistent with evidence that outcome uncertainty can limit conservation and harvest objectives [@Holt2006]. Conversely, greater single-stock fishery outcome uncertainty had a relative modest impact, particularly on spawner abundance, because the single-stock fishery had zero harvest when abundance was low (Fig. S1). 
+
+Greater temporal autocorrelation in recruitment deviations led to declines in recruitment, escapement, the proportion of stocks above their biological benchmark, and catch (Fig. S1). Such patterns are likely due to temporal autocorrelation weakening compensatory biological and management processes. Changes in interannual variability in maturation age and en route mortality rates had relatively minor effects on all performance metrics. Regardless of the performance metric, however, 90% quantile intervals for each sensitivity scenario overlapped the reference opearting model (Fig. S1). Since this pattern was stable when allocations were fully single- or fully mixed-stock, our conclusions are unlikely to be biased by the magnitude of stochastic parameters.
+
+```{r sensPlot, warnings=FALSE, messages=FALSE, fig.cap="Figure S1. Sensitivity of conservation- and catch-based performance metrics to stochastic parameters and temporal autocorrelation. All scenarios assume a 50% of the total allowable catch was allocated to each fishery. Horizontal lines represent the median (solid) estimate and 90th percentile intervals (dashed) from the reference operating model. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials."}
+panelPlot <- ggpubr::ggarrange(agDotPlotList[[1]], agDotPlotList[[2]],
+                               agDotPlotList[[3]], agDotPlotList[[4]],
+                               agDotPlotList[[5]],
+                               ncol = 3, nrow = 2, common.legend = TRUE,
+                               legend = "right",
+                               heights = c(0.85, 1))
+ggpubr::annotate_figure(panelPlot,
+                        bottom = ggpubr::text_grob("Proportion Mixed-Stock TAC",
+                                                   size = 12, vjust = -1))
+```
+
+_Literature Cited_
+

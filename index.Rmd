@@ -1,0 +1,68 @@
+---
+title: "Benefits and limitations of increasing Pacific salmon stock selectivity"
+author: |
+  First. M. Last^1^ and
+  Alex B. Smith^2^
+author_list: "Last, F.M. and Smith, A.B."
+address: |
+  ^1^Pacific Biological Station\
+     Fisheries and Oceans Canada, 3190 Hammond Bay Road\
+     Nanaimo, British Columbia, V9T 6N7, Canada\
+  ^2^Far, far away\
+     Another Galaxy
+month: Month # fill in
+year: 2019
+report_number: nnn
+region: Pacific Region
+citation_other_language: "Last, F.M. et Smith, A.B. Title Here (*Latin Species Name*). DFO Secr. can. de consult. sci. du MPO. Doc. de rech 2019/nnn. iv + 13 p."
+abstract: |
+ Population diversity can stabilize the dynamics of ecological systems and increase their resilience to future environmental change. In exploited systems such as fisheries, however, management goals to preserve diversity may be in tension with harvest objectives. For example, managers of multi-stock fisheries that reduce harvest rates to minimize the risk of overharvesting less productive populations may forgo opportunities to sustainably harvest abundant, sympatric populations. Increasing the stock selectivity of fisheries is one management lever that may allow for both conservation- and catch-based objectives to be met. We develop a model simulating the ecological dynamics of a Pacific salmon stock aggregate and its fishery to evaluate how changing allocations between mixed- and single-stock fisheries influences management performance. We focus on relatively generic management strategies that may be implementable even in data-limited salmon fisheries. Additionally we examine how the relative performance of mixed- and single-stock fisheries change under a range of ecological and management scenarios. We find that increasing single-stock fishery allocations can increase aggregate abundance and the mean status of stocks relative to conservation benchmarks, albeit at the cost of reduced aggregate catch. However these trade-offs do not occur uniformly across stocks -- relatively abundant, productive populations exhibit no change or even declines in conservation performance as single-stock fishery allocations increase. Furthermore, differences in performance between mixed- and single-stock fisheries are reduced when productivity is uniformly low, mortality during freshwater migrations is high, or when the mixed-stock fishery is managed conservatively. While single-stock fisheries can increase the probability that conservation-based objectives will be met, particularly when target exploitation rates are high, they are not a panacea and may only be effective when specific conditions are met.
+header: "Draft working paper --- Do not cite or circulate" # or "" to omit
+output:
+ # csasdown::resdoc_pdf:
+ #   french: false
+  csasdown::resdoc_word
+# ------------
+# End of options to set
+knit: bookdown::render_book
+link-citations: true
+bibliography: bib/ms_singleStock.bib
+csl: csl/ecology.csl # or csl/csas-french.csl for French
+# Any extra LaTeX code for the header:
+# header-includes:
+# - \usepackage{tikz}
+---
+
+```{r setup, echo=FALSE, cache=FALSE, message=FALSE, results='hide', warning=FALSE}
+# adjust as desired:
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>",
+  fig.path = if (knitr:::is_latex_output()) "knitr-figs-pdf/" else "knitr-figs-docx/",
+  cache.path = if (knitr:::is_latex_output()) "knitr-cache-tex/" else "knitr-cache-docx/",
+  fig.asp = 0.618,
+  fig.width = 9,
+  out.width = "6in",
+  echo = FALSE,
+#  autodep = TRUE,
+#  cache = TRUE,
+  cache.comments = FALSE,
+  dev = if (knitr:::is_latex_output()) "png" else "png",
+  dpi = 180,
+  fig.align = "center",
+  fig.pos = "htb"
+)
+options(kableExtra.latex.load_packages = FALSE)
+```
+
+```{r load-libraries, cache=FALSE}
+# add other packages here:
+library(csasdown)
+library(here)
+library(tidyverse)
+library(samSim)
+library(knitr)
+library(kableExtra)
+```

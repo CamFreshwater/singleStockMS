@@ -1,0 +1,59 @@
+# Multi-stock recursive Bayes model with hierarchy on time-invariant alpha value
+
+model{
+
+# Cycle over all observations
+for( k in 1:nobs){
+  # observation model, note Y is estimated log(R) , changes so only one tau_R
+  Rdat[k] ~ dlnorm( Y[ sites[k], years[k] ], tau_R[ sites[k] ] ) 
+  #Rdat[k] ~ dpois( Y[ sites[k], years[k] ] ) 
+  #try with Poisson error instead of log normal
+  #logRec[k] <- log(Rdat[k])
+  #logRec[k] ~ dpois( Y[ sites[k], years[k] ])
+    #added observation error for spawners
+  #Sdat[k] ~ dpois( S[ sites[k], years[k] ] )
+  S[ sites[k], years[k] ] <- Sdat[k]
+  #add another R_obs with proper indices for p-value thing
+  #Rdat2[sites[k], years[k]] <- Rdat[k]
+}
+
+#global parameters
+MuA_global ~ dnorm(MuA, TauA)
+sigA_global ~ dunif(0,100) # changed 2/3/2016
+#TauA_global ~ dgamma(1,1) # changed 2/2/2016 from dgamma(1,0.1) to dgamma(1,1)
+TauA_global <- 1/sigA_global
+
+  for(i in 1:nsites){
+  ## Priors
+  tau_R[i] ~ dgamma(0.01,0.001)         # observation precision on R
+  tauv[i] ~ dgamma(0.01,0.001)          # process precision
+  
+  alpha[i] ~ dnorm(MuA_global, TauA_global)        # select each site's alpha from global dist
+  #alpha[i] ~ dnorm(1,1)
+
+  smax[i] ~ dunif(low,upp[i])              # put prior on smax instead of beta for simplicity  
+  beta[i] <- 1/smax[i]
+  #now cycle over years
+    for (j in 1:nyears[i]){
+       # Ricker model, alpha is log(alpha)
+       #RS[i,j] <- alpha[i] - beta[i] * S[i,j] + v[i,j] 
+       #RS[i,j] <- Y[i,j] - log(S[i,j]) 
+       #S[i,j] <- beta[i] * RS[i,j] - alpha[i] + tauv[i]
+       Y[i,j] <- alpha[i] + log(S[i,j]) - beta[i] * S[i,j] +v[i,j]
+       v[i,j] ~ dnorm(0, tauv[i])                    # random error term
+       #Y[i,j] <- RS[i,j] + log(S[i,j])             # calculate estimated log R (Y)
+       
+       # Calculate "bayesian P-value"
+       # Replicated data set
+       #Rep[i,j] ~ dlnorm(Y[i,j],tau_R[i])     
+       # Probability that replicted data are larger than observered
+       #Pvalue[i,j]<-step(Rep[i,j]-Rdat2[i,j])  
+     }
+   
+  
+  #output variables
+  #varr[i] <- 1/tau_R[i]            # observation error        
+  #varv[i] <- 1/tauv[i]              # process error
+}
+
+}

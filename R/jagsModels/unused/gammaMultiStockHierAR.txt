@@ -1,0 +1,28 @@
+# Autoregressive multistock model w/ gamma priors for variance; approximately # equivalent to 
+# MultiStockHierSimple.txt
+
+model{
+
+  MuA_global ~ dnorm(MuA, TauA)
+  TauA_global ~ dgamma(1, 1)
+
+  for(i in 1:nCUs){
+    tau_R[i] ~ dgamma(0.01,0.01)  #observation precision on R
+    alpha[i] ~ dnorm(MuA_global, TauA_global)  #select each site's alpha from global dist
+    smax[i] ~ dunif(low, upp[i])  #put prior on smax instead of beta because using previusly observed abundance as informative prior
+    beta[i] <- 1/smax[i]
+    rho[i] ~ dnorm(0, 1) #produces reasonable estimates; sigma global insensitive to value
+
+    lnRSmat[i, 1] ~ dnorm(pred[i, 1], err[i, 1]) #in year 1 estimate w/out AR error
+    pred[i, 1] <- alpha[i] - beta[i] * Smat[i, 1]
+    err[i, 1] <- tau_R[i]
+
+    for(j in 2:nyears[i]){
+      lnRSmat[i, j] ~ dnorm(pred[i,j], err[i, j])  #likelihood function
+      err[i, j] <- err[i, j - 1] * rho[i] + tau_R[i]
+      pred[i, j] <- alpha[i] - beta[i] * Smat[i,j]  #prediction of log(R/S)
+    }  #end for j in nyears
+  }  #end for i in nCUs
+
+}
+

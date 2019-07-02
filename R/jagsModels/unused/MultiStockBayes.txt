@@ -1,0 +1,48 @@
+# Multi-stock recursive Bayes model with fixed beta, alpha variable over time as ar1 process with drift
+
+model{
+# Cycle over all observations
+  for( k in 1:nobs){
+  Rdat[k] ~ dlnorm( Y[ sites[k], years[k] ], tau_R[ sites[k] ] ) 
+  S[ sites[k], years[k] ] <- Sdat[k]
+}
+
+#global parameters
+MuA_global ~ dnorm(1, 1)
+TauA_global ~ dgamma(1,0.1) 
+
+  for(i in 1:nsites){
+  ## Priors
+  tau_R[i] ~ dgamma(0.01,0.001)         # observation precision
+  tauw[i] ~ dgamma(0.01,0.001)          # autoregressive tau term
+  tauv[i] ~ dgamma(0.01,0.001)          # process precision
+  
+  rho[i] ~ dunif(0,1)                   # lag-1 autocorrelation coeff
+  
+  alpha[i,1] ~ dnorm(1, 1)        # prior on initial alpha value
+
+  MuA[i] ~ dnorm(MuA_global, TauA_global)  # each sites's alpha drawn from global dist
+  
+  smax[i] ~ dunif(low,upp[i])              # put prior on smax instead of beta for simplicity  
+  beta[i] <- 1/smax[i]
+  }
+  
+  
+  # Cycle over sites, years 
+  for(i in 1:nsites){
+    for (j in 2:nyears){
+       # alpha follows AR1 process with drift
+       alpha[i,j] <- ( 1-rho[i]) * MuA[i] + rho[i]*alpha[i, j-1] + w[i,j] 
+      # with random error, measured by tauw
+       w[i,j] ~ dnorm(0,tauw[i])           
+    }
+    for (j in 1:nyears){
+       # Ricker model, alpha is log(alpha)
+       RS[i,j] <- alpha[i,j] - beta[i] * S[i,j] + v[i,j]   
+       v[i,j] ~ dnorm(0, tauv[i])                    # random error term
+       Y[i,j] <- RS[i,j] +log(S[i,j])             # calculate log R
+
+     }
+   }
+  
+}

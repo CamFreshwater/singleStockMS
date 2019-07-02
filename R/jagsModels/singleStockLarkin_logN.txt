@@ -1,0 +1,35 @@
+# Simple single stock Ricker model based on SimpleRickerNorm.txt, but includes reparameterization inlcuded in the multistock AR models, as well as priors from AMH's WinBUGS script (used in FRSSI model)
+
+model{
+
+  for(i in 1:nCUs){
+    alpha[i] ~ dnorm(0, 0.001) 
+    capUpp[i] <- cap*upp[i] #add cap for prior
+    logUpp[i] <- log(upp[i])
+    smax[i] ~ dlnorm(logUpp[i], 1)I(,capUpp[i]) #prior based on FRSSI documentation
+    #smax[i] ~ dunif(0, upp[i])  #put prior on smax instead of beta for simplicity
+    beta[i] <- 1/smax[i]
+    beta1[i] ~ dunif(0, 100)
+    beta2[i] ~ dunif(0, 100)
+    beta3[i] ~ dunif(0, 100)
+    
+    tau_R[i] ~ dgamma(tauPrior, tauPrior)
+    sig_R[i] <- 1 / sqrt(tau_R[i])
+
+    # separate loop for first 3 years to account for missing data
+    #pred[i,1] <- alpha[i] - beta[i] * Smat[i,1]
+    #pred[i,2] <- alpha[i] - beta[i] * Smat[i,2] - beta1[i] * Smat[i,1] 
+    #pred[i,3] <- alpha[i] - beta[i] * Smat[i,3] - beta1[i] * Smat[i,2] - beta2[i] * Smat[i,1]
+    #for(j in 1:3){
+    #  lnRSmat[i,j] ~ dnorm(pred[i,j], tau_R[i])  #likelihood function
+    #}
+
+    for(j in 4:nyears[i]){
+      lnRSmat[i,j] ~ dnorm(pred[i,j], tau_R[i])  #likelihood function
+      pred[i,j] <- alpha[i] - beta[i] * Smat[i,j] - beta1[i] * Smat[i,j-1] - beta2[i] * Smat[i,j-2] - beta3[i] * Smat[i,j-3] #prediction of log(R/S)
+    }  #end for j in nyears
+  }  #end for i in nCUs
+
+}
+
+

@@ -1,0 +1,40 @@
+# Single stock recursive Bayes model with fixed beta, alpha variable over time as ar1 process with drift
+
+model{
+
+## Priors
+tau_R ~ dgamma(0.01,0.001)         # observation precision
+tauw ~ dgamma(0.01,0.001)          # autoregressive tau term
+tauv ~ dgamma(0.01,0.001)          # process precision
+
+rho ~ dunif(0,1)                   # lag-1 autocorrelation coeff
+
+
+alpha[1] ~ dnorm(1, 1)        # prior on initial alpha value
+MuA ~ dnorm(1, 1)        # use same prior for mean alpha
+
+smax ~ dunif(low,upp)              # put prior on smax instead of beta for simplicity  
+beta <- 1/smax
+
+for (i in 2:N){
+   alpha[i] <- (1-rho)*MuA + rho*alpha[i-1] + w[i]   # alpha follows AR1 process with drift
+   w[i] ~ dnorm(0,tauw)            # with random error, measured by tauw
+}
+
+for (i in 1:N){
+   RS[i] <- alpha[i] - beta * S[i] + v[i]   # Ricker model, alpha is log(alpha)
+   v[i] ~ dnorm(0, tauv)                    # random error term
+   Y[i] <- RS[i] +log(S[i])                 # calculate log R
+   R_Obs[i] ~ dlnorm(Y[i],tau_R)            # observation model, note Y is estimated log(R) 
+ 
+                                    # Calculate "bayesian P-value"
+   Rep[i] ~ dlnorm(Y[i],tau_R)      # Replicated data set
+   Pvalue[i]<-step(Rep[i]-R_Obs[i])  # Probability that replicted data are larger than observered
+}
+
+#output variables
+sig2 <- 1/tau_R            # observation error        
+varv<- 1/tauv              # process error
+varw<- 1/tauw              # autoregressive error
+
+}

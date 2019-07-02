@@ -1,0 +1,51 @@
+# Multi stock recursive Bayes model with fixed beta, alpha variable over time as simple random walk
+
+model{
+
+# Cycle over all observations
+for( k in 1:nobs){
+  Rdat[k] ~ dlnorm( Y[ sites[k], years[k] ], tau_R[ sites[k] ] ) 
+  S[ sites[k], years[k] ] <- Sdat[k]
+}
+
+
+ for(i in 1:nsites){
+    ## Priors
+	tau_R[i] ~ dgamma(0.01,0.001)         # observation precision
+        sigw[i] ~ dunif(0,100)
+        tauw[i] <- 1/sigw[i]             # changed to this format 2/3/2016
+	#tauw[i] ~ dgamma(1,1)          # autoregressive tau term, changed 2/2/2016 from dgamma(0.01,0.001), 
+	tauv[i] ~ dgamma(0.01,0.001)          # process precision
+
+	alpha[i, 1] ~ dnorm(MuA, TauA)        # prior on initial alpha value
+	beta[i] <- 1/smax[i]
+	smax[i] ~ dunif(low,upp[i])              # put prior on smax instead of beta for simplicity  
+        
+         
+	for (j in 2:nyears[i]){
+	    alpha[i,j] <- alpha[i, j-1] + w[i,j]   # alpha follows random walk
+	    w[i,j] ~ dnorm(0,tauw[i])            # with random error, measured by tauw
+	}
+	for (j in 1:nyears[i]){
+	   RS[i,j] <- alpha[i,j] - beta[i] * S[i,j] + v[i,j]   # Ricker model, alpha is log(alpha)
+	   v[i,j] ~ dnorm(0, tauv[i])                    # random error term
+	   Y[i,j] <- RS[i,j] +log(S[i,j])                 # calculate log R
+	   #R_Obs[i] ~ dlnorm(Y[i],tau_R)            # observation model, note Y is estimated log(R) 
+	 
+	                                    # Calculate "bayesian P-value"
+	   #Rep[i] ~ dlnorm(Y[i],tau_R)      # Replicated data set
+	   #Pvalue[i]<-step(Rep[i]-R_Obs[i])	# Probability that replicted data are larger than observered
+	}
+# can't remember why had this here? doesn't seem to be necessary 12/7/2015
+	for (j in (nyears[i]+1):N){
+		alpha[i,j] <- 0
+	}
+ alphaLast[i] <- alpha[i, nyears[i]]
+
+#output variables
+#sig2 <- 1/tau_R            # observation error        
+#varv<- 1/tauv              # process error
+#varw<- 1/tauw              # autoregressive error
+ }
+ #end model
+}

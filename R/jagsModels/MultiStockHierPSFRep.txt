@@ -1,0 +1,23 @@
+# Multistock model intended to mimic MultiStockHierPSF without #drastically changing original input structure
+
+model{
+  
+  MuA_global ~ dnorm(MuA, TauA) #originally fit w/ dnorm(0.5, 1E-6), replace w/ variables so priors can be passed
+  TauA_global ~ dgamma(0.5, 0.5)
+  sigA_global <- pow(TauA_global, -0.5)
+  
+  for(i in 1:nCUs){
+    alpha[i] ~ dlnorm(MuA_global, TauA_global) 
+    prmub[i] <- 1 / prSmax[i] #priors adjusted based on information from E Hertz
+    prtaub[i] <- 1/(prCV[i]^2)
+    beta[i] ~ dlnorm(prmub[i], prtaub[i])
+    sd[i] ~ dunif(0.05, 10)
+    tau_R[i] <- pow(sd[i], -0.5)  #observation precision on R
+    
+    for(j in 1:nyears[i]){
+      lnRSmat[i, j] ~ dnorm(pred[i, j], tau_R[i])  #likelihood function
+      pred[i, j] <- alpha[i] - beta[i] * Smat[i, j]  #prediction of log(R/S)
+    }  #end for j in nyears
+  }  #end for i in nCUs
+
+}

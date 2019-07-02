@@ -1,0 +1,34 @@
+
+model{
+
+# Cycle over all observations
+for( k in 1:nobs){
+  # observation model, note Y is estimated log(R) 
+  Rdat[k] ~ dlnorm( Y[ sites[k], years[k] ],tau_R[sites[k]] )  
+  S[ sites[k], years[k] ] <- Sdat[k]
+
+}
+
+#global parameters
+
+  for(i in 1:nsites){
+  ## Priors
+  alpha[i] ~ dnorm(1,1)
+  tau_R[i] ~ dgamma(0.001,0.001)         # observation precision on R
+  tauv[i] ~ dgamma(0.001,0.001) 
+
+  #smax[i] ~ dunif(low,upp[i])              # put prior on smax instead of beta for simplicity  
+  smax[i] ~ dlnorm(log(MuSmax[i]), TauSmax[i])
+  beta[i] <- 1/smax[i]
+  #now cycle over years
+    for (j in 1:nyears[i]){
+       # Ricker model, alpha is log(alpha) 
+       Y[i,j] <- alpha[i] + log(S[i,j]) - beta[i] * S[i,j] + v[i,j]
+        v[i,j] ~ dnorm(0, tauv[i])                    # random error term
+       
+
+     }
+   
+  }
+
+}

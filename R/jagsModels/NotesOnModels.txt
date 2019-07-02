@@ -1,0 +1,17 @@
+Differences between PSF and DFO hierarchical models:
+
+- Parameters passed externally in DFO, defined in model for PSF
+	- Not sure where priors (prmub and prtaub) are defined in PSF
+	model, appear to be externally
+	- From Corman and English 2013: mean of prior for Smax = avg.
+	escapement; unclear how this meshes w/ model code where no
+	reference to Smax
+- Tau estimated with gamma distribution directly in DFO, indirectly 
+from SD (defined by uniform dist) in PSF
+- PSF model seems to be based on log normal distributions; as a
+result Ricker model is highly simplified and based on ln(recruits)
+- DFO prior for capacity is on Smax, while for PSF it is on B directly
+	- Prior for Smax has mean = mean escapement and CV of 10 in PSF
+- According to documentation, different Ricker structures
+	- PSF: R = S * exp(a - bS + err)
+	- DFO: R = a * S * exp(-bS + err)

@@ -1,0 +1,28 @@
+# Simplified multistock model, structurally equivalent to 
+# MultiStockHierSimple, but instead receives prios for beta 
+# directly similar to PSF's model 
+
+model{
+
+  MuA_global ~ dnorm(MuA, TauA)
+  sigA_global ~ dunif(0,10)
+  TauA_global <- pow(sigA_global, -0.5)
+
+  for(i in 1:nCUs){
+    alpha[i] ~ dnorm(MuA_global, TauA_global) #select each site's alpha from global dist
+    #Alternative priors for beta based on PSF model
+    prmub[i] <- 1 / prSmax[i] #priors adjusted based on information from E Hertz
+    prtaub[i] <- 1/(prCV[i]^2)
+    beta[i] ~ dlnorm(prmub[i], prtaub[i])
+    
+    sig_R[i] ~ dunif(0, 10)
+    tau_R[i] <- pow(sig_R[i], -0.5)
+    
+    for(j in 1:nyears[i]){
+      lnRSmat[i,j] ~ dnorm(pred[i,j], tau_R[i])  #likelihood function
+      pred[i,j] <- alpha[i] - beta[i] * Smat[i,j]  #prediction of log(R/S)
+    }  #end for j in nyears
+  }  #end for i in nCUs
+
+}
+

@@ -1,0 +1,158 @@
+```{r loadPackagesAndData, include=FALSE}
+simPar <- read.csv(here::here("data", "manProcScenarios",
+                        "fraserMPInputs_varyAllocationVaryMixHCR.csv"),
+                   stringsAsFactors = F)
+cuPar <- read.csv(here::here("data/fraserCUparsNEW.csv"), stringsAsFactors = F)
+srDat <- read.csv(here::here("data/fraserRecDatTrim.csv"), stringsAsFactors = F)
+catchDat <- read.csv(here::here("data/fraserCatchDatTrim.csv"), 
+                     stringsAsFactors = F)
+```
+
+# METHODS 
+
+## 2.1 Sockeye salmon biology, fisheries and data sources
+
+The closed-loop simulation model is structured to reflect the life history of sockeye salmon and is parameterized using data from stocks within the Fraser River. Sockeye salmon is an anadromous, semelparous fish distributed throughout the northern Pacific. Populations in southern British Columbia typically rear as juveniles in freshwater lakes for one-two years, mature in the Gulf of Alaska, and return to spawn as two- to five-year olds [@Burgner1991]. Under Canada’s Wild Salmon Policy (WSP), Pacific salmon status is assessed at the scale of conservation units (CUs), defined as “a group of wild salmon sufficiently isolated from other groups that, if lost, is unlikely to recolonize naturally within an acceptable timeframe” [@DFO2005]. While CUs are not precisely equivalent to stocks, we use the latter term throughout to place our analysis in a more generic context.
+
+The Fraser River aggregate is Canada’s largest sockeye salmon run, but is increasingly vulnerable to a range of threats including anthropogenic development, overexploitation, and climate change [@Cohen2012; @COSEWIC2017]. Productivity throughout the system declined in the 1990s [@Peterman2012; @Freshwater2018], resulting in frequent fishery closures and an emergency federal inquiry into the causes of the declines [@Cohen2012]. While specific stocks have shown signs of recovery in recent years, recruitment continues to be highly variable and numerous stocks remain at very low productivity levels, with seven of 24 assessed as at risk of extinction [@COSEWIC2017]. 
+
+Although Fraser River sockeye salmon status is assessed at the stock level, the majority of harvest occurs in the marine environment and is managed using four run timing aggregates (management units; MUs). As a result, harvest effort can be constrained at the scale of MUs, but not individual stocks. Since MUs can include stocks ranging in status from abundant to severely depleted, increasing the stock-selectivity of harvest rates may provide an opportunity to increase the probability of rebuilding depleted stocks, while minimizing socio-economic impacts.  
+
+```{r calcTS, include=FALSE}
+stks <- unique(cuPar$stk)
+d <- srDat %>% 
+  filter(stk %in% stks,
+         !is.na(rec2)) %>% 
+  select(stk, yr) %>% 
+  group_by(stk) %>% 
+  summarise(min = min(yr), 
+            max = max(yr))
+maxY <- min(d$max)
+minY <- max(d$min)
+diff <- maxY - minY
+```
+
+We focused our analysis on the summer-run MU, which contains six stocks that vary in status and cyclic behavior. The stock-recruit time series cover `r diff` years, begining in `r minY` and ending in `r maxY`. Note that throughout this manuscript we use the term *return* abundance to refer to the sum of catch and escapement in a given return year, where escapement is defined as the number of fish that have escaped all fisheries. In comparison, we use the term *recruit* abundance to refer to the sum of catch and escapement produced by spawners from a given brood year (see @Grant2011 for details).
+
+## 2.2 Forward simulation
+
+Closed-loop simulations provide a powerful tool to evaluate the trade-offs among objectives associated with different management frameworks and the consequences of uncertainty. Management strategy evaluation (MSE) is a formalized process for quantifying the performance of different management frameworks, which combines closed-loop simulations with extensive stakeholder and decision-maker engagement [@Punt2016]. Typically closed-loop simulations contain two main components. First, the operating model represents the attributes of the system that are largely beyond the immediate control of managers (e.g. population dynamics of stocks, including declines in productivity associated with climate change). The second model component, the management procedure, represents dimensions of the fishery under more direct anthropogenic control. While examining the performance of different management procedures can be used to evaluate the impact of different harvest control rules [@Holt2008] or the relative accuracy of assessments [@KHolt2011; @Holt2015], different operating models can be used to evaluate the impact of dynamic processes, such as changes in natural mortality and recruitment deviations [@Holt2010; @FreshwaterSub]. Unique combinations of operating models and management procedures, referred to here as scenarios, are used to evaluate how well a given management strategy meets *a priori* objectives, given uncertainty represented by different forms of the operating model. 
+
+### 2.2.1 Reference operating model
+
+The dynamics of each Fraser River stock were simulated using an age-structured, Ricker spawner-recruit model [@Ricker1975]
+
+Equation 1  $$R_{i,y} = S_{i,y} e^{\alpha_i - \beta_iS_{i,y} + w_{i,y}}$$
+
+where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recruits, and $S$ the number of spawners. The parameter $\alpha$ represents the number of recruits produced per spawner at low abundance, while $\beta$ is the density-dependent parameter that represents the reciprocal of the number of spawners that maximizes recruitment. The Ricker model is commonly represented in the linear form 
+
+Equation 2  $$log(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_iS_{i,y} + w_{i,y}$$
+
+where $w_{i,y} \sim normal(0, \sigma^2)$.
+
+A subset of stocks within the Fraser River are cyclic, exhibiting large differences in abundance at four-year intervals. Abundant year classes, typically referred to as dominant as opposed to off-cycle, contribute disproportionately to aggregate returns [@Grant2011]. We used a Larkin model, an extension of the Ricker model that accounts for delayed-density dependent effects by incorporating three additional $\beta$ parameters and spawner abundances from the preceding three years [@Larkin1971], to simulate the dynamics of cyclic stocks (two of six stocks in the Summer Run MU; Appendix S1).
+
+To account for observed productivity declines in Fraser River sockeye salmon [@Peterman2012; @Freshwater2018], we used a recursive Bayes stock-recruitment model to estimate non-stationary $\alpha$ parameters. To parameterize the forward simulation model we estimated median parameter sets (i.e. median $\alpha$ from the most recent time step and corresponding $\beta$ and $\sigma$) using stock-specific spawner-recruit models (details of model structure and fitting in Appendix S1). <!-- CF comment: Can you send these to me when you get a chance AMH?-->
+
+Year- and stock-specific recruitment deviations $w_{i,y}$ in the forward simulation incorporated temporal autocorrelation and covariance in recruitment deviations among stocks
+
+Equation 3a $$w_{i,y} = w_{i,y-1}\tau + r_{i,y}$$
+Equation 3b $$r_i \sim MVN(0, \boldsymbol{\mathrm{V}})$$
+Equation 3c $$\boldsymbol{\mathrm{V}} =
+ \begin{bmatrix}
+  \sigma'^2_1 & \rho\sigma'_1\sigma'_2 & \cdots & \rho\sigma'_1\sigma'_n \\
+  \rho\sigma'_1\sigma'_2 & \sigma'^2_2 & \cdots & \rho\sigma'_2\sigma'_n \\
+  \vdots  & \vdots  & \ddots & \vdots  \\
+  \rho\sigma'_1\sigma'_n & \rho\sigma'_2\sigma_n & \cdots & \sigma'^2_n
+ \end{bmatrix}$$
+
+where $w_{i,y-1}$ represents recruitment deviations one year prior, $\tau$ represents an autoregressive lag-1 year (AR1) correlation coefficient, and $r_{i,y}$ represents multivariate normally distributed error with a standard deviation defined by the variance-covariance matrix $\boldsymbol{\mathrm{V}}$, dimensioned by the number of CUs $n$. $\rho$ represents the pairwise correlation coefficient among stocks and was set to $`r simPar[["correlCU"]][1]`$ based on the mean observed correlation in recruitment deviations in recent years. We adjusted estimates of $\sigma$ to account for $\tau$ using the transformation, $\sigma'^2 = \sigma^2(1-\tau^2 )$, where $\sigma^2$ is the variance derived from a model without autocorrelation and $\sigma'^2$ is the adjusted value [@Pestal2011]. $\tau$ was set to 0.2 based on evidence of weak autocorrelation in the residuals of stock-recruit models from preliminary analyses.
+
+Although the majority of Fraser River sockeye salmon mature at age 4 (i.e. one winter as eggs, one winter as fry in lakes, and two ocean winters), smaller proportions mature at ages 2, 3, and 5, with age structure varying among stocks We modeled this process by calculating the number of individuals returning to spawn $R'_{i,t}$ in return year $t$ in stock as a function of the total number of adult recruits $R$ generated in previous brood years, multiplied by the proportion $p$ of fish that return at a given age $g$ 
+
+Equation 4 $$ R'_{i,t} = R_{i,t-2}p_{2,i,t-2} + R_{i,t-3}p_{3,i,t-3} + R_{i,t-4}p_{4,i,t-4} + R_{i,t-5}p_{5,i,t-5}. $$
+
+We incorporated multivariate logistic variation in the proportion of mature fish returning at each age
+
+Equation 5 $$ p_{g,i,y} = \frac{ \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} {\sum_{2}^{5} \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} $$
+
+where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma$ parameters which scaled the size of deviations in equation (5) using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimated values ranged from 0.68-1.48 across stocks.
+
+The simulation model included multiple sources of mortality in addition to the natural mortality implicitly incorporated in the spawner-recruit relationship. First, we simulated harvest $C$ in mixed- and single-stock fisheries (details in *2.2.2 Management Procedure*). We also simulated stock-specific en-route mortality $D$, which accounts for natural mortality during upstream migration, unreported harvest, post-release fishing mortality, and error between in-river and terminal estimates of spawner abundance [@Grant2011]. We modeled the number of fish lost to en-route mortality as a stochastic process that varied by stock as a function of escapement
+
+Equation 6 $$ D_{i,t} \sim \text{lognormal}(d_{i,t}(R'_{i,t} - C_{i,t}), \sigma^2_{mort,i}) $$
+
+where $d$ represents the mean and $\sigma_{mort}$ the standard deviation of the en-route mortality rate. En-route mortality was parameterized using observed differences in estimated abundance between in-river and spawning ground sampling sites for each stock(2000-2016; Pacific Salmon Commission, unpublished data). Values for $d$ ranged from 0.04-0.60 and for $\sigma_{mort}$ from 0.17-0.48.
+
+Spawner abundance $S$ was then calculated as 
+
+Equation 7 $$ S_{i,t} = R'_{i,t} - C_{i,t} - D_{i,t} .$$
+
+### 2.2.2 Management procedure
+
+The management procedure contained a harvest component, representing the dynamics of two distinct fisheries, as well as an observation and assessment component that simulated the data collection process and assessed status relative to predefined management targets.
+
+We modeled tradeoffs between mixed- and single-stock fisheries by calculating target catch at an individual stock (CU) level and allocating a fixed proportion of that target catch to each fishery. Although the stock-selectivity of a fishery can theoretically be increased using a variety of spatial or temporal restrictions, we modeled fully segregated and sequential fisheries (i.e. mixed-stock fisheries followed by single-stock fisheries). This structure maximized contrast between different mixed- and single-stock allocations and is plausible for salmon where freshwater fisheries in terminal areas have been developed for several populations [@DFO2017a].
+
+We modeled catch in each fishery using a generic, abundance-based harvest control rule with three distinct steps. First, an MU-level target exploitation rate $\hat{u}$ was calculated based on aggregate abundance, using a generic harvest control rule proposed under Fisheries and Oceans Canada's Precautionary Approach Framework [@DFO2017b]. Specifically a minimal exploitation rate (10%) approximating incidental harvest in other fisheries was applied when MU-level abundance was less than 40% of the spawner abundance that would lead to maximumum sustainable yield ($0.4{S}_{MSY}$). When abundance was greater than 80% of that spawner abundance ($0.8{S}_{MSY}$), the exploitation rate at maximum sustainable yield (approximated by ${u}_{MSY}$; Fig. S1) was applied. When return abundance was between these two reference points, the target exploitation rate was a linear function of abundance (Fig S1):
+
+Equation 8 $$ \hat{u} = {u}_{MSY}({\frac{R' – 0.4{S}_{MSY}} {0.8{S}_{MSY} − 0.4{S}_{MSY}}}).$$
+
+We calculated ${u}_{MSY}$ at the MU-level using the Lambert W function, $W(z)$, [@Scheuerell2016]:
+
+Equation 9 $$ {u}_{MSY} = 1 - W(e^{1 - \alpha_m})$$
+
+where $\alpha_m$ is an estimate of MU-level productivity calculated by fitting a Ricker model (Eq. 2) to spawner and recruit abundance data summed among all summer-run CUs. 
+
+Second, we calculated the stock-specific target catch for each fishery ($\hat{C}_{mix,i}$ and $\hat{C}_{sing,i}$) as
+
+Equation 10a $$ \hat{C}_{mix,i,t} = p\hat{u}R'_{i,t} $$
+Equation 10b $$ \hat{C}_{sing,i,t} = (1-p)\hat{u}R'_{i,t} $$
+
+where $\hat{u}$ is the target exploitation rate, $R'$ is return abundance, $\hat{C_{mix}}$ and $\hat{C_{sing}}$ are the target catch for mixed- and single-stock fisheries, respectively, and $p$ is the proportion of the total catch allocated to the mixed-stock fishery. We varied $p$ from 0 to 1, in increments of 0.25, to evaluate the impact of changing the relative proportion of catch harvested in mixed- vs. single-stock fisheries.
+
+Third, we reduced the impacts of fisheries on depleted populations by closing single-stock fisheries when a stock was at low abundance. In the case of non-cyclic stocks (modeled with a Ricker relationship) the single-stock harvest control rule was
+
+Equation 11a $$ \hat{C}_{sing,i,t} = 0 \text{ if  } \tilde{S}_{med,i} < S_{con,i} $$
+Equation 11b $$ \tilde{S}_{i,t} \sim \text{lognormal}(S_{i,t}, \sigma^2_{obs}) $$
+
+where $\tilde{S}_{med}$ is median observed spawner abundance in the previous generation and $S_{con}$ is a biological benchmark representing relatively severe conservation concern. We defined this benchmark in the context of Canada's Wild Salmon Policy, setting $S_{con,i} = S_{gen,i}$, where ${S}_{gen,i}$ is the abundance that will result in spawner abundance leading to ${S}_{MSY}$ in one generation in the absence of fishing mortality [@DFO2005; @Holt2009]. In the case of cyclic CUs (modeled with a Larkin relationship) the single-stock fishery was closed (i.e. $\hat{C}_{sing,i,t} = 0$) unless the current simulation year was a dominant cycle line (defined by calendar year) and the previous dominant return year's spawner abundance was greater than ${S}_{gen,i}$. 
+
+Realized catches in each fishery included outcome uncertainty (also referred to as implementation uncertainty or implementation error), which represents deviations between target and realized catches due to variation in forecast accuracy, catchability, enforcement, or unreported catch [@Holt2006]. We calculated realized exploitation rates $u_{y}$ as random variables sampled from a beta distribution with parameters $\hat{a}$ and $\hat{b}$, which are calculated from target exploitation rate, $\hat{u}$, and standard deviation, $\sigma_{out}$,:
+
+Equation 12a $$ u_{i,t} \sim \text{beta}(\hat{a}_{i,t}, \hat{b}_{i,t})$$
+Equation 12b $$ \hat{a}_{i,t} = \hat{u}_{i,t}^2 ({\frac{1 - \hat{u}_{i,t}} {\sigma_{out}^2}} - {\frac{1}{\hat{u}_{i,t}}}) $$
+Equation 12c $$ \hat{b}_{i,t} = \hat{a}_{i,t}(1 / \hat{u}_{i,t} - 1) .$$
+
+We parameterized $\sigma_{out}$ using observed deviations between target and realized exploitation rates in mixed-stock fisheries for Fraser River sockeye salmon MUs between 2006 and 2017. We fixed $\sigma_{out}$ at $`r simPar[["mixOUSig"]][1]`$ for both mixed- and single-stock fisheries since there is no evidence that terminal fisheries currently operating have larger deviations from management targets than marine fisheries (J. Scroggie, DFO Fisheries management, *personal communication*). 
+
+We note that Fraser River sockeye salmon are currently managed with a more conservative variable exploitation rate harvest control (total allowable mortality (TAM) rule), which attempts to account for cyclic abundance, overlapping run timings among MUs, en route mortality, and other system-specific management adjustments [@Pestal2011]. However the reference points associated with the TAM rule vary interannually and are informed by expert opinion, reducing its relevance to salmon fisheries in general. The TAM rule is summarized in Appendix S1 and we present the results of a secondary analysis comparing its performance to the generic HCR in Appendix S2. <!-- CF: should TAM analysis go in supplement or main text? --> 
+
+### 2.2.3 Alternative operating models
+
+We evaluated the relative performance of various levels of single vs mixed-stock fisheries across two sets of alternative operating models. First, we incorporated alternate productivity regimes by applying a scalar (0.6 to 1.1 in increments of 0.05) to each stocks's estimate of $\alpha$. Each stock's alpha estimate accounts for observed temporal variability (mean ~30% decline among stocks; see Appendix S1 for details). The scalar accounts for hypothetical, additional future changes. 
+Second, we tested the effect of the timing of en route mortality $D$ relative to single-stock harvest on the efficacy of single-stock fisheries. Specifcally, we modeled the impact of single stock harvest that occurred after en route mortality
+
+Equation 13 $$ C_{sing,i,t} = (R'_{i,t} - C_{mix,i,t} - D_{i,t})u_{sing,i,t}. $$
+
+Thus spawner abundance was calculated as
+
+Equation 14 $$ S_{i,t} = R'_{i,t} - C_{mix,i,t} - D_{i,t} - C_{sing,i,t}. $$
+
+This modification is intended to represent a scenario where single-stock fisheries can only be developed in fully terminal areas. Such a scenario is particularly relevant to Fraser River sockeye salmon because the large number of stocks and the overlap in migration timing among stocks [@Grant2011], will constrain the selectivity of fisheries that are not fully terminal. Since en route mortality can be considerable in certain years [@Grant2011; @Cooke2004], the abundance of fish available to harvest will be lower in terminal fisheries in those years relative to marine, altering trade-offs between conservation and catch objectives. 
+
+### 2.2.4 Performance metrics
+
+We considered a range of conservation- and catch-based performance metrics to determine how fishery allocations impact the probability of meeting management objectives (Table \@ref(tab:pmTable)). We evaluated both stock-specific and aggregate (i.e. summed or mean values within the MU) performance metrics because the relative impact of changes in exploitation rate and fishery allocation may differ between abundant and depleted stocks. The aggregate performance metrics account for all six stocks within the MU. We present median outputs among simulations for each performance metric, as well as the 5th and 95th percentiles.
+
+```{r pmTable, results="asis"}
+pmTable <- read.csv(here::here("data", "msTables", "pmTable.csv"))
+
+k <- knitr::kable(pmTable, format = "pandoc", booktabs = TRUE, linesep = "",
+                  caption = "Aggregate and stock-specific performance metrics."
+) 
+k <- kableExtra::kable_styling(k, font_size = 12)
+k
+```
+
+We initialized the simulation with stock-specific time series of spawner and recruit abundance and ran the simulation for $`r simPar[["simYears"]][1]`$ years (approximately $`r round(simPar[["simYears"]][1]/4, 0)`$ generations). We summarized performance metrics across 1500 Monte Carlo trials (convergence typically occurred after approximately 1200). Finally, we completed sensitivity analyses to evaluate assumptions regarding age-at-maturity, fishery-specific outcome uncertainty, en-route mortality, and temporal autocorrelation in recruitment deviations (Appendix S2). 

@@ -1,0 +1,34 @@
+# Multi-stock recursive Bayes model with hierarchy on time-invariant alpha value; 
+# process precision removed to make estimates consistent with FR SR pars
+
+model{
+
+# Cycle over all observations
+for( k in 1:nobs){
+  # observation model, note Y is estimated log(R), changes so only one tau_R
+  Rdat[k] ~ dlnorm( Y[ sites[k], years[k] ], tau_R[ sites[k] ] ) 
+  S[ sites[k], years[k] ] <- Sdat[k]
+}
+
+#global parameters
+MuA_global ~ dnorm(MuA, TauA)
+sigA_global ~ dunif(0,100) # changed 2/3/2016
+TauA_global <- 1/sigA_global
+
+  for(i in 1:nsites){
+  ## Priors
+  tau_R[i] ~ dgamma(0.01,0.001)         # observation precision on R
+  #tauv[i] ~ dgamma(0.01,0.001)          # process precision
+  
+  alpha[i] ~ dnorm(MuA_global, TauA_global)        # select each site's alpha from global dist
+
+  smax[i] ~ dunif(low,upp[i])              # put prior on smax instead of beta for simplicity  
+  beta[i] <- 1/smax[i]
+  #now cycle over years
+    for (j in 1:nyears[i]){
+       # Ricker model, alpha is log(alpha)
+       Y[i,j] <- alpha[i] + log(S[i,j]) - beta[i] * S[i,j] #+v[i,j]
+       #v[i,j] ~ dnorm(0, tauv[i])          # random error term
+     }
+}
+}

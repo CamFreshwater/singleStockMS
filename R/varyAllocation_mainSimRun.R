@@ -41,7 +41,7 @@ larkPars <- read.csv(here("data/trimRecursiveLarkinMCMCPars.csv"),
 tamFRP <- read.csv(here("data/tamRefPts.csv"), stringsAsFactors = F)
 
 ## Define simulations to be run
-nTrials <- 1000
+nTrials <- 1500
 
 ## Make unique MP vector 
 simPar$nameMP <- paste(simPar$propMixHigh, simPar$singleHCR, "_", 

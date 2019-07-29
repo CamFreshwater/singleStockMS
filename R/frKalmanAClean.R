@@ -55,6 +55,8 @@ mean(alphaEst$maxInc)
 mean(alphaEst$maxDec)
 median(alphaEst$maxInc)
 median(alphaEst$maxDec)
+range(alphaEst$maxInc)
+range(alphaEst$maxDec)
 #use 35% for both to keep balanced
 range(alphaEst$curChange)
 hist(alphaEst$curChange)

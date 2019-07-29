@@ -24,6 +24,7 @@ outputs/diagnostics
 outputs/simData
 outputs/srAnalysis/figs/
 data/workingFinalSimRun
+data/old
 data/recursiveLarkinMCMCPars.csv
 data/recursiveRickerMCMCPars.csv
 .Rproj.user

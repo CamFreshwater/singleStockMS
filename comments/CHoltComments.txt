@@ -1,0 +1,7 @@
+With regards to Eq 10b
+CH: Assuming true recruitment in the same year as the catch? If so, this would be a very data-rich stock with perfect in-season information. I see below that there is observation error in the on/off switch for single-stock fisheries, but not in estimation of target catch. Why wasn’t forecast error included here? (e.g., assuming run is long enough such that preliminary escapement estimates help inform in-season recruitment??) I suspect we discussed this earlier, but have forgotten the rationale for this.
+CF: Forecast error wasn't included because we couldn't separate it from the other processes contributing to historical outcome uncertainty. Thus, if we incorporated both forecast and implementation error, total outcome uncertainty would be inflated.
+
+With regards to Sgen,i for Larkin stocks
+CH: Estimated using Grant et al. 2017 unpublished CSAS Working Paper methods for Larkin-type stocks?
+CF: It's briefly mentioned in the DFO 2017 assessment update - would this be an appropriate reference?

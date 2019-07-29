@@ -1,7 +1,7 @@
 Objective,Metric,Scale
-,Median spawner abundance,Aggregate and stock-specific
-Conservation,Proportion of stocks above conservation benchmark,Aggregate
-,Proportion of years above conservation benchmark,Stock-specific
-,Median catch,Aggregate and stock-specific
-Catch,Stability of catch,Aggregate and stock-specific
-,Median realized exploitation rate,Aggregate and stock-specific
+,Median spawner abundance during simulated time series,Aggregate and stock-specific
+Conservation,Proportion of stocks above conservation benchmark at end of simulated time series,Aggregate
+,Proportion of years above conservation benchmark during simulated time series,Stock-specific
+,Median catch during simulated time series,Aggregate and stock-specific
+Catch,Stability (inverse of coefficient of variation) of catch during simulated time series,Aggregate and stock-specific
+,Median realized exploitation rate during simulated time series,Aggregate and stock-specific

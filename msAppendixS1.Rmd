@@ -60,7 +60,28 @@ where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recru
 
 ## Recursive Bayes stock-recruit model
 
-We used a recursive Bayesian formulation of the Peterman et al. [-@Peterman2011] Kalman filter model, which accounts for temporal variability in the alpha parameter (C. Michielsens, pers. comm., unpublished data), to estimate Ricker and Larkin stock recruit parameters for each CU. We estimated parameters for each stock independently with priors that ranged from weakly to moderately informative (Table S1). We fit models using MCMC in JAGS (Plummer 2003) with the R package R2jags (Su and Yajima 2015). We confirmed model convergence using visual inspection of trace plots and Gelman-Rubin statistics. Each model run included three MCMC chains of 250,000 iterations, with a burn in of 50,000 and a thinning rate of 50.
+We used a recursive Bayesian formulation of the Peterman et al. [-@Peterman2012] Kalman filter model, which accounts for temporal variability in the alpha parameter (C. Michielsens, pers. comm., unpublished data), to estimate Ricker and Larkin stock recruit parameters for each stock independently. The priors for most parameters were weakly informative (Table S1), except for $\alpha$ which was normally distributed with a mean and standard deviation taken from the posterior estimates of a stationary stock recruit analysis [@Freshwater2019]. We fit models using MCMC in JAGS [@Plummer2003] with the R package R2jags [@Su2015]. We confirmed model convergence using visual inspection of trace plots and Gelman-Rubin statistics. Each model run included three MCMC chains of 250,000 iterations, with a burn in of 50,000 and a thinning rate of 50.
+
+```{r priorsTable, results="asis"}
+priorsTable <- read.csv(here::here("data", "msTables", "priorsTable.csv"))
+
+#add parameters 
+parPriors <- c("ln$(\\alpha)$", "$S_{max}$", "$\\tau$", "$\\beta_{1-3}$")
+dist <- c("normal$(\\alpha_{stat.}, \\sigma_{\\alpha_{stat.}})$",
+          "lognormal(ln(max$(S_{obs.}), 1)$ truncated at 3 x max$(S_{obs.})$",
+          "gamma(0.001, 0.001)",
+          "uniform(0, 100")
+
+priorsTable <- priorsTable %>% 
+  mutate(Parameter = parPriors, 
+         Prior.Distribution = dist)
+
+csas_table(priorsTable,
+  caption = "Table S1. Priors for recursive Bayes stock recruit models.",
+  font_size = 20,
+  col_names = c("Parameter", "Description", "Prior Distribution")
+)
+```
 
 ## Harvest control rules
 
@@ -101,13 +122,13 @@ abline(v = lowFRP, col = "red", lty = 2, lwd = 2)
 abline(v = highFRP, col = "darkgreen", lty = 2, lwd = 2)
 ```
 
-We also evaluated the impact of an alternative HCR, a total allowable mortality (TAM) rule, intended to approximate the management framework currently used for Fraser River sockeye salmon. As with the reference HCR, the TAM rule specifies annual target harvest rates based return abundance relative to two fishery reference points. Unlike the generic HCR, however, the TAM rule reference points differ among cycle lines, are derived using expert knowledge, and the maximum target harvest rates are lower (Table S1).
+We also evaluated the impact of an alternative HCR, a total allowable mortality (TAM) rule, intended to approximate the management framework currently used for Fraser River sockeye salmon. As with the reference HCR, the TAM rule specifies annual target harvest rates based return abundance relative to two fishery reference points. Unlike the generic HCR, however, the TAM rule reference points differ among cycle lines, are derived using expert knowledge, and the maximum target harvest rates are lower (Table S2).
 
 ```{r frpTable, results="asis"}
 frpTable <- read.csv(here::here("data", "msTables", "frpTable.csv"))
 
 csas_table(frpTable,
-  caption = "Table S1. Fishery reference points (FRP; in millions of fish) and maximum exploitation rates (ER) for the generic harvest control rule utilized in the main text and the total allowable mortality rule.",
+  caption = "Table S2. Fishery reference points (FRP; in millions of fish) and maximum exploitation rates (ER) for the generic harvest control rule utilized in the main text and the total allowable mortality rule.",
   font_size = 20,
   col_names = c("Harvest Control Rule", "Cycle", "Low FRP", "High FRP", "Maximum ER")
 )

@@ -60,7 +60,7 @@ where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recru
 
 ## Recursive Bayes stock-recruit model
 
-_Add based on info from Ann-Marie_
+We used a recursive Bayesian formulation of the Peterman et al. [-@Peterman2011] Kalman filter model, which accounts for temporal variability in the alpha parameter (C. Michielsens, pers. comm., unpublished data), to estimate Ricker and Larkin stock recruit parameters for each CU. We estimated parameters for each stock independently with priors that ranged from weakly to moderately informative (Table S1). We fit models using MCMC in JAGS (Plummer 2003) with the R package R2jags (Su and Yajima 2015). We confirmed model convergence using visual inspection of trace plots and Gelman-Rubin statistics. Each model run included three MCMC chains of 250,000 iterations, with a burn in of 50,000 and a thinning rate of 50.
 
 ## Harvest control rules
 

@@ -6,6 +6,10 @@ With regards to Sgen,i for Larkin stocks
 CH: Estimated using Grant et al. 2017 unpublished CSAS Working Paper methods for Larkin-type stocks?
 CF: It's briefly mentioned in the DFO 2017 assessment update - would this be an appropriate reference?
 
+With regards to Figure 4 (heat map)
+CH:I’m having difficulty reconciling the left panel with Fig. 2b (right panel on Fig. 2). Should the contours on the vertical line at scalar =1 match the metric values on that plot, which range between 0.37-0.6. Here, it looks like they range between 0.58-0.71. What is the difference in underlying parameters? I suggest keeping them constant between the two, and highlighting the similarity in plots.
+CF: Good catch. This was a bug driven by me leaving US harvest in one set of figures but not the other. Corrected now and I've added a note about how the two figures are similar.
+
 With regards to divergent productivity in discussion
 CH:Consider adding a sentence or paragraph on differential trends in productivity among stocks (e.g., Harrison vs other declineing stocks). I recall you ran some scenarios of this.
 CF: These scenarios tended to just behave intermediately to optimistic and pessimistic productivity scenarios. Given space constraints I'm not sure it's worth emphasizing currently, but will revisit after moving more of methods to supp.

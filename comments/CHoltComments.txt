@@ -5,3 +5,7 @@ CF: Forecast error wasn't included because we couldn't separate it from the othe
 With regards to Sgen,i for Larkin stocks
 CH: Estimated using Grant et al. 2017 unpublished CSAS Working Paper methods for Larkin-type stocks?
 CF: It's briefly mentioned in the DFO 2017 assessment update - would this be an appropriate reference?
+
+With regards to divergent productivity in discussion
+CH:Consider adding a sentence or paragraph on differential trends in productivity among stocks (e.g., Harrison vs other declineing stocks). I recall you ran some scenarios of this.
+CF: These scenarios tended to just behave intermediately to optimistic and pessimistic productivity scenarios. Given space constraints I'm not sure it's worth emphasizing currently, but will revisit after moving more of methods to supp.

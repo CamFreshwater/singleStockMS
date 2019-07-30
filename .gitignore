@@ -27,10 +27,8 @@ data/workingFinalSimRun
 data/old
 data/recursiveLarkinMCMCPars.csv
 data/recursiveRickerMCMCPars.csv
+R/hidden
 .Rproj.user
-scripts/lm-t-skew.rds
-scripts/lm-t.rds
-scripts/lm.rds
 *.html
 scripts/*cache*
 #*.png

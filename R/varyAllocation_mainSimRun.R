@@ -65,10 +65,15 @@ summCUs <- cuPar %>%
 #------------------------------------------------------------------------------
 
 ## Run simulation
-# recoverySim(simParTrim[1, ], cuPar, catchDat = catchDat, srDat = srDat,
-#             variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
-#             cuCustomCorrMat = cuCustomCorrMat, dirName = "Test", nTrials = 4,
-#             makeSubDirs = FALSE, random = FALSE)
+recoverySim(simParTrim[1, ], cuPar, catchDat = catchDat, srDat = srDat,
+            variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
+            dirName = "TestRef", nTrials = 5, makeSubDirs = FALSE, random = FALSE)
+
+recoverySim(simParNew[111, ], cuPar, catchDat = catchDat, srDat = srDat,
+            variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
+            dirName = "testVaryP", nTrials = 5, makeSubDirs = FALSE, random = FALSE)
+
+
 for (i in seq_along(dirNames)) {
   dirName <- dirNames[i]
   d <- subset(simParTrim, scenario == scenNames[i])
@@ -109,8 +114,6 @@ for (i in seq_along(dirNames)) {
 
 # Aggregate PMs to plot
 agVarsToPlot <-  c("medRecRY", "medSpawners", "ppnCULower", 
-                   # "ppnCUStable", "ppnCUExtant", "ppnYrsHighCatch", 
-                   # "ppnMixedOpen", 
                    "medCatch", "stabilityCatch", "medER")
 
 agDat <- buildDataAgg(dirNames, agVars =  agVarsToPlot, 
@@ -127,16 +130,11 @@ agDat <- buildDataAgg(dirNames, agVars =  agVarsToPlot,
                                     "medSpawners",
                                   "Ppn. CUs Not\nRed (Throughout)" = 
                                     "ppnCULower",
-                                  # "Ppn. MUs Above\nEsc. Goal" = "ppnMixedOpen",
-                                  # "Ppn. CUs Not\nRed (Sim. End)" = 
-                                  #   "ppnCUStable",
-                                  # "Ppn. CUs Extant" = 
-                                  #   "ppnCUExtant",
-                                  # "Ppn. Yrs. Above\nCatch Target" = 
-                                  #   "ppnYrsHighCatch",
                                   "Aggregate Catch" = "medCatch",
                                   "Catch Stability" = "stabilityCatch",
                                   "Median Exploitation Rate" = "medER")) 
+
+saveRDS(agDat, here::here("outputs", "generatedData", "mainSimAgDat.rds"))
 
 refDat <- agDat %>% 
   filter(om == "ref", 

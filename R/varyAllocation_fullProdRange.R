@@ -40,8 +40,9 @@ larkPars <- read.csv(here("data/trimRecursiveLarkinMCMCPars.csv"),
                      stringsAsFactors = F)
 tamFRP <- read.csv(here("data/tamRefPts.csv"), stringsAsFactors = F)
 
+
 ## Define simulations to be run
-nTrials <- 100
+nTrials <- 300
 
 ## Expand dataset to include full range of productivity regimes 
 prodScalars <- seq(0.5, 1.1, by = 0.05)
@@ -66,19 +67,14 @@ simParNew <- lapply(seq_along(prodScalars), function(x)
                         sep = ""),
          nameOM = case_when(
            scenario == "varyProd" ~ paste(prodScalar, "Prod", sep = ""),
-           scenario == "varySynch" ~ paste(correlCU, "Synch", sep = ""))) 
+           scenario == "varySynch" ~ paste(correlCU, "Synch", sep = ""))) %>% 
+  filter(scenario == "varyProd")
 
 dirNames <- unique(simParNew$nameOM)
-# dirNames <- simParNew %>% 
-#   filter(scenario == "varySynch") %>% 
-#   select(nameOM) %>% 
-#   unique() %>%
-#   sapply(as.character) %>% 
-#   as.vector()
 
-# recoverySim(simParNew[12, ], cuPar, catchDat = catchDat, srDat = srDat,
+# recoverySim(simParNew[111, ], cuPar, catchDat = catchDat, srDat = srDat,
 #             variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
-#             dirName = "test", nTrials = 5, makeSubDirs = FALSE, random = FALSE)
+#             dirName = "testVaryP", nTrials = 5, makeSubDirs = FALSE, random = FALSE)
 
 for (i in seq_along(dirNames)) {
   dirName <- dirNames[i]
@@ -132,6 +128,19 @@ agDat <- buildDataAgg(dirNames, agVars =  agVarsToPlot,
            scenario == "Prod" ~ "0.4")) %>% 
   mutate(prod = as.numeric(prod),
          synch = as.numeric(synch))
+
+# saveRDS(agDat, here::here("outputs", "generatedData", "heatMapDat.rds"))
+
+agDatP <- agDat %>% 
+  filter(om == "1Prod",
+         ppnMixed == "1",
+         var == "medRecRY")
+agDatRef <- read.csv(here::here("outputs", "generatedData", 
+                                "mainSimAgDat.rds")) %>% 
+  filter(om == "ref",
+         ppnMixed == "1",
+         var == "medRecRY",
+         hcr == "genPA")
 
          
 ## Make heat map function
@@ -210,9 +219,9 @@ plotAgTradeoff(synchDat, consVar = "medRecRY", catchVar = "medCatch",
 prodDat <- agDat %>% 
   filter(scenario == "Prod")
 
-plotAgTradeoff(prodDat, consVar = "medRecRY", catchVar = "medCatch", 
+plotAgTradeoff(prodDat, consVar = "ppnCULower", catchVar = "medCatch", 
                facet = "om", shape = "mp", showUncertainty = TRUE, 
-               xLab = "medCatch", yLab = "medRecRY", 
+               xLab = "medCatch", yLab = "ppnCULower", 
                legendLab = "Proportion\nTAC Mix\nFishery",
                axisSize = 11, dotSize = 4, legendSize = 13, lineSize = 0.5, 
                scaleAxis = "fixed")

@@ -1,7 +1,10 @@
 ## Results 
 
 ```{r loadSimRunData, include=FALSE}
-## Simulation ran in varyAllocation_mainSimRun.R. Also includes example figures
+## Simulation ran in varyAllocation_mainSimRun.R, which also includes example figures
+simPar <- read.csv(here::here("data", "manProcScenarios",
+                        "fraserMPInputs_varyAllocationVaryMixHCR.csv"),
+                   stringsAsFactors = F)
 simParTrim <- simPar %>%
   filter(nameOM %in% c("ref", "enRoute"),
          benchmark == "stockRecruit")
@@ -10,7 +13,7 @@ dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species),
                                                 sep = "_"))
 
 #ID stocks included in CU-specific analyses
-cuPar <- read.csv(here("data/fraserCUpars.csv"), stringsAsFactors = F)
+cuPar <- read.csv(here("data/fraserCUPars.csv"), stringsAsFactors = F)
 summCUs <- cuPar %>% 
   filter(manUnit == "Summ") %>% 
   mutate(abbStkName = abbreviate(stkName, minlength = 4)) %>% 

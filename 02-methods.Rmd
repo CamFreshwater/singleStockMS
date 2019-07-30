@@ -2,7 +2,7 @@
 simPar <- read.csv(here::here("data", "manProcScenarios",
                         "fraserMPInputs_varyAllocationVaryMixHCR.csv"),
                    stringsAsFactors = F)
-cuPar <- read.csv(here::here("data/fraserCUparsNEW.csv"), stringsAsFactors = F)
+cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 srDat <- read.csv(here::here("data/fraserRecDatTrim.csv"), stringsAsFactors = F)
 catchDat <- read.csv(here::here("data/fraserCatchDatTrim.csv"), 
                      stringsAsFactors = F)
@@ -76,7 +76,12 @@ We incorporated multivariate logistic variation in the proportion of mature fish
 
 Equation 5 $$ p_{g,i,y} = \frac{ \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} {\sum_{2}^{5} \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} $$
 
-where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters which scaled the size of deviations in equation (5) using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from 0.68-1.48 depending on stock.
+```{r gammas, include=FALSE}
+minGamma <- min(cuPar$tauCycAge)
+maxGamma <- max(cuPar$tauCycAge)
+```
+
+where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters which scaled the size of deviations in equation (5) using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from $`r minGamma`$ - $`r maxGamma`$ among stocks.
 
 The simulation model included multiple sources of mortality in addition to the natural mortality implicitly incorporated in the spawner-recruit relationship. First, we simulated harvest $C$ in mixed- and single-stock fisheries (details in *2.2.2 Management Procedure*). We also simulated stock-specific en-route mortality $D$, which accounts for natural mortality during upstream migration, unreported harvest, post-release fishing mortality, and error between in-river and terminal estimates of spawner abundance [@Grant2011]. We modeled the number of fish lost to en-route mortality as a stochastic process that varied by stock as a function of escapement
 

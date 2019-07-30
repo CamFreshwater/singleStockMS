@@ -9,3 +9,7 @@ CF: It's briefly mentioned in the DFO 2017 assessment update - would this be an 
 With regards to divergent productivity in discussion
 CH:Consider adding a sentence or paragraph on differential trends in productivity among stocks (e.g., Harrison vs other declineing stocks). I recall you ran some scenarios of this.
 CF: These scenarios tended to just behave intermediately to optimistic and pessimistic productivity scenarios. Given space constraints I'm not sure it's worth emphasizing currently, but will revisit after moving more of methods to supp.
+
+With regards to inflection point on HCR figure S1. 
+CH: Is the inflection point in the line supposed to differ from the vertical red dashed line? If so, what is the deviation?
+CF: This deviation is due to us including a minimum 10% exploitation rate. In reality the generic PA HCR should rise linearly from 0%.

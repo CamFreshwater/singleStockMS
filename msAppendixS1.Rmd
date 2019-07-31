@@ -49,12 +49,44 @@ library(knitr)
 library(kableExtra)
 ```
 
+## Recruitment deviations
+
+Year- and stock-specific recruitment deviations $w_{i,y}$ in the forward simulation incorporated temporal autocorrelation and covariance in recruitment deviations among stocks
+
+Equation S1a $$w_{i,y} = w_{i,y-1}\tau + r_{i,y}$$
+Equation S1b $$r_i \sim MVN(0, \boldsymbol{\mathrm{V}})$$
+Equation S1c $$\boldsymbol{\mathrm{V}} =
+ \begin{bmatrix}
+  \sigma'^2_1 & \rho\sigma'_1\sigma'_2 & \cdots & \rho\sigma'_1\sigma'_n \\
+  \rho\sigma'_1\sigma'_2 & \sigma'^2_2 & \cdots & \rho\sigma'_2\sigma'_n \\
+  \vdots  & \vdots  & \ddots & \vdots  \\
+  \rho\sigma'_1\sigma'_n & \rho\sigma'_2\sigma_n & \cdots & \sigma'^2_n
+ \end{bmatrix}$$
+
+where $w_{i,y-1}$ represents recruitment deviations one year prior, $\tau$ represents an autoregressive lag-1 year (AR1) correlation coefficient, and $r_{i,y}$ represents multivariate normally distributed error with a standard deviation defined by the variance-covariance matrix $\boldsymbol{\mathrm{V}}$, dimensioned by the number of stocks $n$. $\rho$ represents the pairwise correlation coefficient among stocks and was set to $`r simPar[["correlCU"]][1]`$ based on the mean observed correlation in recruitment deviations in recent years. We adjusted estimates of $\sigma$ to account for $\tau$ using the transformation, $\sigma'^2 = \sigma^2(1-\tau^2 )$, where $\sigma^2$ is the variance derived from a model without autocorrelation and $\sigma'^2$ is the adjusted value [@Pestal2011]. $\tau$ was set to 0.2 based on evidence of weak autocorrelation in the residuals of stock-recruit models from preliminary analyses.
+
+## Age-at-maturity
+
+Although the majority of Fraser River sockeye salmon mature at age 4 (i.e. one winter as eggs, one winter as fry in lakes, and two ocean winters), smaller proportions mature at ages 2, 3, and 5, with age structure varying among stocks We modeled this process by calculating the number of individuals returning to spawn $R'_{i,t}$ in return year $t$ in stock as a function of the total number of adult recruits $R$ generated in previous brood years, multiplied by the proportion $p$ of fish that return at a given age $g$ 
+
+Equation S2 $$ R'_{i,t} = R_{i,t-2}p_{2,i,t-2} + R_{i,t-3}p_{3,i,t-3} + R_{i,t-4}p_{4,i,t-4} + R_{i,t-5}p_{5,i,t-5}. $$
+
+We incorporated multivariate logistic variation in the proportion of mature fish returning at each age
+
+Equation S3 $$ p_{g,i,y} = \frac{ \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} {\sum_{2}^{5} \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} $$
+
+```{r gammas, include=FALSE}
+minGamma <- min(cuPar$tauCycAge)
+maxGamma <- max(cuPar$tauCycAge)
+```
+
+where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters which scaled the size of deviations in equation (5) using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from $`r minGamma`$ - $`r maxGamma`$ among stocks.
 
 ## Larkin model
 
 Cyclic salmon stocks are typically modeled using an adaptation of the Ricker model, the Larkin model, featuring delayed density-dependence parameters [@Larkin1971]:
 
-Equation S1  $$log_{e}(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_{0,i}S_{i,y} - \beta_{1,i}S_{i,y-1} - \beta_{2,i}S_{i,y-2} - \beta_{3,i}S_{i,y-3} + w_{i,y}$$
+Equation S4  $$log_{e}(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_{0,i}S_{i,y} - \beta_{1,i}S_{i,y-1} - \beta_{2,i}S_{i,y-2} - \beta_{3,i}S_{i,y-3} + w_{i,y}$$
 
 where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recruits, and $S$ the number of spawners. The parameter $\alpha$ represents the number of recruits produced per spawner at low abundance, while $\beta_{x}$ is the density-dependent parameter at time lag $x = $ 0, 1, 2, 3, 4. Stochastic recruitment deviations, $w_{i,y}$, are normally distributed with mean zero and variance $\sigma^2$. Fraser River sockeye salmon stocks modeled with a Larkin relationship contain one dominant and three off-cycle lines.
 

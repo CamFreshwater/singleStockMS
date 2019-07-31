@@ -49,6 +49,8 @@ library(knitr)
 library(kableExtra)
 ```
 
+# Operating Model
+
 ## Recruitment deviations
 
 Year- and stock-specific recruitment deviations $w_{i,y}$ in the forward simulation incorporated temporal autocorrelation and covariance in recruitment deviations among stocks
@@ -109,6 +111,12 @@ csas_table(priorsTable,
   col_names = c("Parameter", "Description", "Prior Distribution")
 )
 ```
+
+# Management procedure
+
+## Forecast error and outcome uncertainty
+
+The simulation model assumes that total catch is split into stock-specific target catch, $C_{targ,i}$, proportional to each stock's abundance in a given year. Fisheries managers clearly do not have access to this information in-season, but in the case of mixed-stock fisheries the assumption is valid because fish are assumed to be harvested proportionally to their abundance and the data used to parameterize outcome uncertainty incorporated forecast error. In the case of single-stock fisheries fish are not harvested proportionally to their abundance, but their are no data available to parameterize the stock-specific forecast process independently of outcome uncertainty. Preliminary investigations, however, suggest that incorporating forecast error when allocating aggregate total allowable catch to stock-specific catch results in reduced performance of single-stock fisheries relative to mixed due to intermittent overharvest.
 
 ## Harvest control rules
 

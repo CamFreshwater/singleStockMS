@@ -79,7 +79,7 @@ Second, we calculated the stock-specific target catch for each fishery ($C_{targ
 Equation 7a $$ C_{targ,mix,i,t} = pu_{targ}R'_{i,t} $$
 Equation 7b $$ C_{targ,sing,i} = (1-p)u_{targ}R'_{i,t} $$
 
-where $u_{targ}$ is the target exploitation rate, $R'$ is return abundance, and $p$ is the proportion of the total catch allocated to the mixed-stock fishery. We varied $p$ from 0 to 1, in increments of 0.25, to evaluate the impact of changing the relative proportion of catch harvested in mixed- vs. single-stock fisheries.
+where $u_{targ}$ is the target exploitation rate, $R'$ is return abundance, and $p$ is the proportion of the total catch allocated to the mixed-stock fishery. We varied $p$ from 0 to 1, in increments of 0.25, to evaluate the impact of changing the relative proportion of catch harvested in mixed- vs. single-stock fisheries. Note that $C_{targ}$ calculations assume that stock-specific return abundance is known without error, which may result in overestimates of single-stock fishery performance (see Appendix S1 for details).
 
 Third, we reduced the impacts of fisheries on depleted populations by closing single-stock fisheries when median observed spawner abundance, $\tilde{S}_{med}$, was below a biological benchmark consistent with relatively severe conservation concern, $S_{con}$. In the case of non-cyclic stocks (modeled with a Ricker relationship) the single-stock harvest control rule was
 

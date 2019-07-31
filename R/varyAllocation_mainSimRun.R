@@ -48,17 +48,14 @@ simPar$nameMP <- paste(simPar$propMixHigh, simPar$singleHCR, "_",
                        simPar$harvContRule, sep = "")
 
 simParTrim <- simPar %>%
-  filter(nameOM %in% c("ref"),
-         harvContRule == "genPA",
+  filter(nameOM %in% c("ref", "enRoute"),
          benchmark == "stockRecruit")
-  # filter(nameOM %in% c("ref", "enRoute"),
-  #        benchmark == "stockRecruit")
 scenNames <- unique(simParTrim$scenario)
-# dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species), 
-#                                                 sep = "_"))
-dirNames <- sapply(scenNames, function(x) paste("forePpn", x, 
-                                                unique(simParTrim$species), 
+dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species),
                                                 sep = "_"))
+# dirNames <- sapply(scenNames, function(x) paste("forePpn", x, 
+#                                                 unique(simParTrim$species), 
+#                                                 sep = "_"))
 
 # Focal CUs and CU-specific PMs
 summCUs <- cuPar %>% 

@@ -41,17 +41,23 @@ larkPars <- read.csv(here("data/trimRecursiveLarkinMCMCPars.csv"),
 tamFRP <- read.csv(here("data/tamRefPts.csv"), stringsAsFactors = F)
 
 ## Define simulations to be run
-nTrials <- 1500
+nTrials <- 250
 
 ## Make unique MP vector 
 simPar$nameMP <- paste(simPar$propMixHigh, simPar$singleHCR, "_", 
                        simPar$harvContRule, sep = "")
 
 simParTrim <- simPar %>%
-  filter(nameOM %in% c("ref", "enRoute"),
+  filter(nameOM %in% c("ref"),
+         harvContRule == "genPA",
          benchmark == "stockRecruit")
+  # filter(nameOM %in% c("ref", "enRoute"),
+  #        benchmark == "stockRecruit")
 scenNames <- unique(simParTrim$scenario)
-dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species), 
+# dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species), 
+#                                                 sep = "_"))
+dirNames <- sapply(scenNames, function(x) paste("forePpn", x, 
+                                                unique(simParTrim$species), 
                                                 sep = "_"))
 
 # Focal CUs and CU-specific PMs
@@ -65,14 +71,9 @@ summCUs <- cuPar %>%
 #------------------------------------------------------------------------------
 
 ## Run simulation
-recoverySim(simParTrim[1, ], cuPar, catchDat = catchDat, srDat = srDat,
-            variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
-            dirName = "TestRef", nTrials = 5, makeSubDirs = FALSE, random = FALSE)
-
-recoverySim(simParNew[111, ], cuPar, catchDat = catchDat, srDat = srDat,
-            variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
-            dirName = "testVaryP", nTrials = 5, makeSubDirs = FALSE, random = FALSE)
-
+# recoverySim(simParTrim[1, ], cuPar, catchDat = catchDat, srDat = srDat,
+#             variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
+#             dirName = "test", nTrials = 5, makeSubDirs = FALSE, random = FALSE)
 
 for (i in seq_along(dirNames)) {
   dirName <- dirNames[i]

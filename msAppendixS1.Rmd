@@ -62,13 +62,11 @@ Equation S1c $$\boldsymbol{\mathrm{V}} =
   \vdots  & \vdots  & \ddots & \vdots  \\
   \rho\sigma'_1\sigma'_n & \rho\sigma'_2\sigma_n & \cdots & \sigma'^2_n
  \end{bmatrix}$$
-
 where $w_{i,y-1}$ represents recruitment deviations one year prior, $\tau$ represents an autoregressive lag-1 year (AR1) correlation coefficient, and $r_{i,y}$ represents multivariate normally distributed error with a standard deviation defined by the variance-covariance matrix $\boldsymbol{\mathrm{V}}$, dimensioned by the number of stocks $n$. $\rho$ represents the pairwise correlation coefficient among stocks and was set to $`r simPar[["correlCU"]][1]`$ based on the mean observed correlation in recruitment deviations in recent years. We adjusted estimates of $\sigma$ to account for $\tau$ using the transformation, $\sigma'^2 = \sigma^2(1-\tau^2 )$, where $\sigma^2$ is the variance derived from a model without autocorrelation and $\sigma'^2$ is the adjusted value [@Pestal2011]. $\tau$ was set to 0.2 based on evidence of weak autocorrelation in the residuals of stock-recruit models from preliminary analyses.
 
 ## Age-at-maturity
 
 Although the majority of Fraser River sockeye salmon mature at age 4 (i.e. one winter as eggs, one winter as fry in lakes, and two ocean winters), smaller proportions mature at ages 2, 3, and 5, with age structure varying among stocks We modeled this process by calculating the number of individuals returning to spawn $R'_{i,t}$ in return year $t$ in stock as a function of the total number of adult recruits $R$ generated in previous brood years, multiplied by the proportion $p$ of fish that return at a given age $g$ 
-
 Equation S2 $$ R'_{i,t} = R_{i,t-2}p_{2,i,t-2} + R_{i,t-3}p_{3,i,t-3} + R_{i,t-4}p_{4,i,t-4} + R_{i,t-5}p_{5,i,t-5}. $$
 
 We incorporated multivariate logistic variation in the proportion of mature fish returning at each age
@@ -96,18 +94,15 @@ We used a recursive Bayesian formulation of the Peterman et al. [-@Peterman2012]
 
 ```{r priorsTable, results="asis"}
 priorsTable <- read.csv(here::here("data", "msTables", "priorsTable.csv"))
-
 #add parameters 
 parPriors <- c("ln$(\\alpha)$", "$S_{max}$", "$\\tau$", "$\\beta_{1-3}$")
 dist <- c("normal$(\\alpha_{stat.}, \\sigma_{\\alpha_{stat.}})$",
           "lognormal(ln(max$(S_{obs.}), 1)$ truncated at 3 x max$(S_{obs.})$",
           "gamma(0.001, 0.001)",
           "uniform(0, 100")
-
 priorsTable <- priorsTable %>% 
   mutate(Parameter = parPriors, 
          Prior.Distribution = dist)
-
 csas_table(priorsTable,
   caption = "Table S1.1. Priors for recursive Bayes stock recruit models.",
   font_size = 20,
@@ -127,13 +122,11 @@ Equation 6 $$ {u}_{MSY} = 1 - W(e^{1 - \alpha_m})$$
 
 where $\alpha_m$ is an estimate of MU-level productivity calculated by fitting a Ricker model (Eq. 2 main text) to spawner and recruit abundance data summed among all summer-run stocks. All reference points were derived from aggregate benchmarks calculated after summing spawner and return abundances across stocks.
 
-```{r genHCR, warnings=FALSE, messages=FALSE, fig.cap="Figure S1.1. Generic, abundance-based harvest control rule used to calculate target exploitation rates. Dashed vertical lines represent lower (red) and upper (green) fishery reference points equivalent to $0.4{S}_{MSY}$ and $0.8{S}_{MSY}$, respectively. The maximum exploitation rate is equal to ${u}_{MSY}$. The inflection point in exploitation rate does not fall on the lower fishery reference point because we assumed that an exploitation rate less than 0.1 was not realistic given incidental harvest in other fisheries."}
+```{r genHCR, warnings=FALSE, messages=FALSE, fig.cap="Figure S1.1. Generic, abundance-based harvest control rule used to calculate target exploitation rates. Dashed vertical lines represent lower (red) and upper (green) fishery reference points equivalent to $0.4{S}_{MSY}$ and $0.8{S}_{MSY}$, respectively. The maximum exploitation rate is equal to ${u}_{MSY}$ (0.66 for the Summer Run MU aggregate). The inflection point in exploitation rate does not fall on the lower fishery reference point because we assumed that an exploitation rate less than 0.1 was not realistic given incidental harvest in other fisheries."}
 cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
-
 uMsy <- cuPar$uMSY[1]
 lowFRP <- cuPar$lowFRP[1]
 highFRP <- cuPar$highFRP[1]
-
 ret = seq(0, 2, length.out = 999)
 esc = rep(NA, length.out = 999)
 hr = rep(NA, length.out = 999)
@@ -151,7 +144,6 @@ for (i in 1:length(ret)) {
   }
   esc[i] <- ret[i] - (ret[i] * hr[i])
 }
-
 plot(hr ~ ret, xlim=c(0, 2), ylim=c(0, 1), ylab = "", xlab = "", axes = F, 
      type ="l", lwd = 2)
 axis(1, las = 1)
@@ -166,14 +158,13 @@ We also evaluated the impact of an alternative HCR, a total allowable mortality 
 
 ```{r frpTable, results="asis"}
 frpTable <- read.csv(here::here("data", "msTables", "frpTable.csv"))
-
 csas_table(frpTable,
   caption = "Table S2. Fishery reference points (FRP; in millions of fish) and maximum exploitation rates (ER) for the generic harvest control rule utilized in the main text and the total allowable mortality rule. Note that the first year of the simulation is on the 4th cycle line.",
   font_size = 20,
-  col_names = c("Harvest Control Rule", "Cycle", "Low FRP", "High FRP", "Maximum ER")
+  col_names = c("Harvest Control Rule", "Cycle", "Low FRP", "High FRP", "Maximum Target ER")
 )
 ```
 
-The TAM rule also differs from the generic HCR due to three additional adjustments. First, the TAM rule includes a constant escapement goal above the lower fishery reference point, resulting in a curvilinear increase in target exploitation rates as abundance increases, rather than the linear increase in Fig. S1. Second, harvest rates are typically lowered due to anticipated en-route mortality. We simulated this process by applying an en-route mortality adjustment, _pMA_, that acts as a scalar on escapement goals (i.e. a _pMA_ equal to 0 is no adjustment, equal to 1 is a 100% increase in the escapement goal). We parameterized this model component by setting the _pMA_ equal to the median _pMA_ observed for the Summer Run MU since 2000. Third, harvest rates are adjusted annually to reduce incidental harvest of co-migrating MUs that are at low abundance. We excluded this adjustment because we only modeled one MU (Summer Run stocks).
+The TAM rule also differs from the generic HCR due to three additional adjustments. First, the TAM rule includes a constant escapement goal above the lower fishery reference point, resulting in a curvilinear increase in target exploitation rates as abundance increases, rather than the linear increase in Fig. S1. Second, harvest rates are typically lowered due to anticipated en-route mortality. We simulated this process by applying an en-route mortality adjustment, _pMA_, that acts as a scalar on escapement goals (the difference between return size and target catch). Thus a _pMA_ equal to 0 results in no adjustment, while a _pMA_ equal to 1 results in a 100% increase in the escapement goal. We parameterized this model component by setting the _pMA_ equal to the median _pMA_ observed for the Summer Run MU since 2000. Third, harvest rates are adjusted annually to reduce incidental harvest of co-migrating MUs that are at low abundance. We excluded this adjustment because we only modeled one MU (Summer Run stocks).
 
 _Literature Cited_

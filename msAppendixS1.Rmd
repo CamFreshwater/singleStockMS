@@ -117,9 +117,17 @@ csas_table(priorsTable,
 
 ## Harvest control rules
 
-As described in the main text, the simulation model generated target harvest rates (for both fisheries combined) using a generic, abundance-based harvest control rule (HCR) proposed under Fisheries and Oceans Canada's Precautionary Approach Framework [@DFO2017b]. Specifically a minimal exploitation rate (10%) approximating incidental harvest was applied when MU-level abundance was less than 40% of the spawner abundance that would lead to maximumum sustainable yield ($0.4{S}_{MSY}$). When abundance was greater than 80% of that spawner abundance ($0.8{S}_{MSY}$), the exploitation rate at maximum sustainable yield (approximated by ${u}_{MSY}$; Fig. S1) was applied. When return abundance was between these two reference points, the target exploitation rate was a linear function of abundance (Fig. S1). All reference points were derived from aggregate benchmarks calculated after summing spawner and return abundances across stocks.
+The simulation model generated target harvest rates (for both fisheries combined) using a generic, abundance-based harvest control rule (HCR) proposed under Fisheries and Oceans Canada's Precautionary Approach Framework [@DFO2017b]. Specifically a minimal exploitation rate (10%) approximating incidental harvest was applied when MU-level abundance was less than 40% of the spawner abundance that would lead to maximumum sustainable yield ($0.4{S}_{MSY}$). When abundance was greater than 80% of that spawner abundance ($0.8{S}_{MSY}$), the exploitation rate at maximum sustainable yield (approximated by ${u}_{MSY}$) was applied (Fig. S1.1). When return abundance was between these two reference points, the target exploitation rate was a linear function of abundance:
 
-```{r genHCR, warnings=FALSE, messages=FALSE, fig.cap="Figure S1. Generic, abundance-based harvest control rule used to calculate target exploitation rates. Dashed vertical lines represent lower (red) and upper (green) fishery reference points equivalent to $0.4{S}_{MSY}$ and $0.8{S}_{MSY}$, respectively. The maximum exploitation rate is equal to ${u}_{MSY}$. The inflection point in exploitation rate does not fall on the lower fishery reference point because we assumed that an exploitation rate less than 0.1 was not feasible given incidental harvest in other fisheries."}
+Equation 5 $$ u_{targ} = {u}_{MSY}({\frac{R' – 0.4{S}_{MSY}} {0.8{S}_{MSY} − 0.4{S}_{MSY}}}).$$
+
+We calculated ${u}_{MSY}$ at the aggregate MU-level using the Lambert W function, $W(z)$ [@Scheuerell2016]:
+
+Equation 6 $$ {u}_{MSY} = 1 - W(e^{1 - \alpha_m})$$
+
+where $\alpha_m$ is an estimate of MU-level productivity calculated by fitting a Ricker model (Eq. 2 main text) to spawner and recruit abundance data summed among all summer-run stocks. All reference points were derived from aggregate benchmarks calculated after summing spawner and return abundances across stocks.
+
+```{r genHCR, warnings=FALSE, messages=FALSE, fig.cap="Figure S1.1. Generic, abundance-based harvest control rule used to calculate target exploitation rates. Dashed vertical lines represent lower (red) and upper (green) fishery reference points equivalent to $0.4{S}_{MSY}$ and $0.8{S}_{MSY}$, respectively. The maximum exploitation rate is equal to ${u}_{MSY}$. The inflection point in exploitation rate does not fall on the lower fishery reference point because we assumed that an exploitation rate less than 0.1 was not realistic given incidental harvest in other fisheries."}
 cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 
 uMsy <- cuPar$uMSY[1]

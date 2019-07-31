@@ -1,7 +1,9 @@
 ## Results 
 
 ```{r loadSimRunData, include=FALSE}
+library(samSim)
 library(ggpubr)
+library(tidyverse)
 ## Simulation ran in varyAllocation_mainSimRun.R, which also includes example figures
 simPar <- read.csv(here::here("data", "manProcScenarios",
                         "fraserMPInputs_varyAllocationVaryMixHCR.csv"),
@@ -49,7 +51,7 @@ refDat <- agDat %>%
 
 Relatively large allocations to mixed- instead of single-stock fisheries resulted in declines in aggregate conservation-based performance metrics, including median return abundance, median spawner abundance, and the mean proportion of stocks above their conservation benchmark (Fig. \@ref(fig:aggDot)a-c). Conversely median aggregate catch and aggregate catch stability were maximized at intermediate allocations to mixed-stock fisheries (Fig. \@ref(fig:aggDot)d,e). These impacts on conservation- and catch-based metrics were driven by differences in realized exploitation rates, which increased with mixed-stock fishery allocations (Fig. \@ref(fig:aggDot)f).
 
-```{r aggDot, warnings=FALSE, messages=FALSE, fig.cap="Changes in aggregate conservation- and catch-based performance metrics across a range of fishery allocations, i.e. range of proportional allocation of mixed- to single-stock where 1 and 0 are fully mixed- and fully single-stock fisheries, respectively. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials."}
+```{r aggDot, warnings=FALSE, messages=FALSE, fig.cap="Changes in aggregate conservation- and catch-based performance metrics across a range of fishery allocations, i.e. range of proportional allocation of mixed- to single-stock where 1 and 0 are fully mixed- and fully single-stock fisheries, respectively. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials. Abundance and catch are in millions of fish."}
 # Fig. 1 - Dot plots
 # color figures not supported by Conservation Biology
 # colPal <- viridis::viridis(length(levels(refDat$ppnMixed)), begin = 0, 
@@ -69,12 +71,12 @@ agDotPlotList <- lapply(seq_along(agVarsToPlot), function(x) {
                           fill = ppnMixed)) +
     ylim(0.85 * min(dum$lowQ), max(dum$highQ)) +
     labs(x = "", y = unique(dum$labelledVar)) +
-    geom_pointrange(shape = 21, fatten = 3, size = 2,
+    geom_pointrange(shape = 21, fatten = 2.5, size = 2,
                     position = position_dodge(width = 0.65)) +
     geom_text(data = panelLabs %>% filter(var == agVarsToPlot[x]),
               mapping = aes(x = 0.9, y = min(0.85 * dum$lowQ), label = lab,
                             vjust = 0),
-              show.legend = FALSE, inherit.aes = FALSE, size = 7) +
+              show.legend = FALSE, inherit.aes = FALSE, size = 5) +
     scale_fill_manual(guide = FALSE, values = colPal)
   if (unique(dum$var) %in% c("medRecRY", "medSpawners", "ppnCULower")) {
     p <- p +
@@ -120,10 +122,10 @@ conLabels <- c("Median Aggregate\nReturn Abundance",
 panelLabs <- data.frame(lab = c("a)", "b)"),
                         var = factor(consVec, 
                                      levels = unique(consVec)))
+dum <- refDat %>% 
+  filter(var == "medCatch")
 
 toAgList <- lapply(seq_along(consVec), function(x) {
-  dum <- refDat %>% 
-    filter(var == consVec[x])
   p <- plotAgTradeoff(refDat %>% select(-labelledVar), consVar = consVec[x], 
                       catchVar = catchVec[x],
                       facet = NULL, shape = NULL, showUncertainty = TRUE,
@@ -132,9 +134,9 @@ toAgList <- lapply(seq_along(consVec), function(x) {
                       axisSize = 15, dotSize = 6, legendSize = 14,
                       lineSize = 1.5, scaleAxis = "fixed", hotColors = FALSE) +
     geom_text(data = panelLabs %>% filter(var == consVec[x]),
-              mapping = aes(x = 0.9, y = min(0.85 * dum$lowQ), label = lab,
-                            vjust = 0),
-              show.legend = FALSE, inherit.aes = FALSE, size = 7)
+              mapping = aes(x = max(0.95 * dum$highQ), y = Inf, label = lab,
+                            vjust = 1.5),
+              show.legend = FALSE, inherit.aes = FALSE, size = 6)
   return(p)
 })
 panelTO <- ggarrange(toAgList[[1]], toAgList[[2]], ncol = 2, nrow = 1,
@@ -196,7 +198,7 @@ plotHeat <- function(plotVar = "medRecRY", legName = "rec", bins = 30,
   ggplot(dumInterp, aes(x = opMod, y = ppnMixedNew)) + 
     geom_tile(aes(fill = value)) + 
     geom_contour(aes(z = value), color = "black", linetype = 1, size = 1.1) +
-    scale_fill_gradient(low = "#0D0D0D", high = "#E6E6E6") +
+    scale_fill_gradient(name = "legName", low = "#0D0D0D", high = "#E6E6E6") +
     # viridis::scale_fill_viridis(name = "legName", option = "plasma") +
     theme_sleekX(legendSize = 1.1) +
     theme(axis.title.x = element_blank(),
@@ -204,7 +206,7 @@ plotHeat <- function(plotVar = "medRecRY", legName = "rec", bins = 30,
 }
 ```
 
-Changes in population productivity moderated the effect of fishery allocations on conservation- and catch-based metrics. At high levels of productivity, increasing single-stock fishery allocations resulted in relatively large increases in the proportion of stocks above the conservation threshold; however as productivity declines the relative difference between predominantly mixed- and single-stock fishery decreases (Fig. \@ref(fig:prodTO) left). Conversely, median catch is maximized at intermediate allocations (~75% mixed stock) when productivity is high, but as productivity declines predominantly single-stock fisheries begin to provide greater catches (Fig. \@ref(fig:prodTO) right). 
+Increases or decreases in population productivity changed the effect of fishery allocations on conservation- and catch-based metrics. At high levels of productivity, increasing single-stock fishery allocations resulted in relatively large increases in the proportion of stocks above the conservation threshold; however as productivity declines the relative difference between predominantly mixed- and single-stock fishery decreases (Fig. \@ref(fig:prodTO) left). Conversely, median catch is maximized at intermediate allocations (~75% mixed stock) when productivity is high, but as productivity declines predominantly single-stock fisheries begin to provide greater catches (Fig. \@ref(fig:prodTO) right). 
 
 ```{r prodTO, warnings=FALSE, messages=FALSE, fig.cap="Impacts of changes in productivity on median proportion of stocks above their conservation benchmark, $S_{con}$ (left) and median aggregate catch (right) across across a range of mixed-stock fishery allocations. Productivity is moderated by a scalar applied uniformly to the most recent estimate for each stock so that the data shown with productivity scalar = 1 is equivalent to Fig 2b."}
 dumLab <- expression(atop('Ppn. Stocks', 'Above S'[con]))
@@ -249,16 +251,16 @@ enRouteDat <- agDat %>%
   ))
 conLabels2 <- c("Median Aggregate\nReturn Abundance", 
                "Proportion of CUs\nAbove Benchmark")
+omVec <- unique(enRouteDat$om)
 panelLabs <- data.frame(lab = c("a)", "b)"),
-                        var = factor(consVec, 
-                                     levels = unique(consVec)))
+                        om = factor(omVec, levels = omVec))
 labY <- enRouteDat %>% 
   filter(var == "medRecRY") %>% 
-  select(avg) %>% 
+  select(lowQ) %>% 
   min()
 labX <- enRouteDat %>% 
   filter(var == "medCatch") %>% 
-  select(avg) %>% 
+  select(lowQ) %>% 
   min()
 
 plotAgTradeoff(enRouteDat %>% select(-labelledVar), consVar = "medRecRY", 
@@ -268,10 +270,5 @@ plotAgTradeoff(enRouteDat %>% select(-labelledVar), consVar = "medRecRY",
                yLab = "Median Aggregate Return", 
                legendLab = "Proportion\nMixed\nStock TAC",
                axisSize = 15, dotSize = 6, legendSize = 13, lineSize = 1,
-               scaleAxis = "fixed", hotColors = FALSE) +
-    geom_text(data = panelLabs %>% filter(var == "medRecRY"),
-              mapping = aes(x = labX, y = labY, label = lab,
-                            vjust = 0),
-              show.legend = FALSE, inherit.aes = FALSE, size = 7)
-  
+               scaleAxis = "fixed", hotColors = FALSE, facetLetter = TRUE)
 ```

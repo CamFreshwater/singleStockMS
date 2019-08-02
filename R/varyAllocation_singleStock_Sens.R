@@ -55,9 +55,9 @@ summCUs <- cuPar %>%
 #------------------------------------------------------------------------------
 
 ## Run simulation
-# recoverySim(simParTrim[3,], cuPar, catchDat = catchDat, srDat = srDat,
+# recoverySim(simParTrim[34,], cuPar, catchDat = catchDat, srDat = srDat,
 #             variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
-#             cuCustomCorrMat = cuCustomCorrMat, dirName = "Test", nTrials = 4,
+#             cuCustomCorrMat = cuCustomCorrMat, dirName = "Test", nTrials = 10,
 #             makeSubDirs = FALSE, random = FALSE)
 
 

@@ -65,9 +65,9 @@ summCUs <- cuPar %>%
 plotDat <- read.csv(here::here("outputs", "generatedData", 
                                "sensAnalysisSummaryData.rds")) %>% 
   filter(mp == "0.5retro_genPA") %>% 
-  mutate(scen = fct_relevel(scen, "rho", after = Inf)) %>% 
-  mutate(scen = fct_relevel(scen, "enRouteSig", after = Inf)) 
-  
+  mutate(scen = fct_relevel(scen, "rho", "obsSig", "mixOU", "singOU", "ageTau",
+                            "enRouteSig"),
+         om = fct_relevel(om, "low", "high"))
 ```
 
 
@@ -107,7 +107,8 @@ csas_table(sensPars,
 
 
 ```{r generateData, include=FALSE}
-vars <- c("medRecRY", "medSpawners", "ppnCULower", "medCatch", "stabilityCatch")
+vars <- c("medRecRY", "medSpawners", "ppnCULower", "medCatch", "stabilityCatch",
+          "medER")
 
 agDotPlotList <- lapply(seq_along(vars), function(x) {
   dum <- plotDat %>% 
@@ -127,32 +128,34 @@ agDotPlotList <- lapply(seq_along(vars), function(x) {
                size = 0.5) +
     geom_hline(dumRef, mapping = aes(yintercept = highQ), linetype = 2, 
                size = 0.5) +
-    scale_x_discrete(labels = c("ageTau" = "Mat.\nAge", 
-                                "mixOU" = "Mixed\nOU", 
+    scale_x_discrete(labels = c("ageTau" = "Mat.\nAge",
+                                "mixOU" = "Mixed\nOU",
                                 "singOU" = "Single\nOU",
-                                "rho" = "Temp.\nAuto.", 
-                                "enRouteSig" = "Mig.\nMort.")) + 
+                                "rho" = "Temp.\nAuto.",
+                                "enRouteSig" = "Mig.\nMort.",
+                                "obsSig" = "Obs.\nSpawn.")) +
     scale_fill_discrete(name = "Sensitivity\nAnalysis",
-                      labels = c("Upper\nBound", "Lower\nBound"))
+                      labels = c("Lower\nBound", "Upper\nBound"))
   if (unique(dum$pmClass) == "catch") {
     p <- p +
-      theme_sleekX(position = "bottom", axisSize = 11, legendSize = 1.1)
+      theme_sleekX(position = "bottom", axisSize = 10, legendSize = 1.05)
   } else {
     p <- p +
-      theme_sleekX(position = "top", axisSize = 11, legendSize = 1.1)
+      theme_sleekX(position = "top", axisSize = 10, legendSize = 1.05)
   }
   return(p)
 })
 ```
 
-The effects of greater variability differed among stochastic parameters and performance metrics. Greater outcome uncertainty within mixed-stock fisheries had the most consistent negative impact, with larger deviations between realized and target catch resulting in declines in all performance metrics (Fig. S2.1). Such patterns are consistent with evidence that outcome uncertainty can limit conservation and harvest objectives [@Holt2006]. Conversely, greater single-stock fishery outcome uncertainty had a relative modest impact, particularly on spawner abundance, because the single-stock fishery had zero harvest when abundance was low (Fig. S3.1). 
+The effects of greater variability differed among stochastic parameters and performance metrics. Greater temporal autocorrelation in recruitment deviations led to declines in recruitment, escapement, the proportion of stocks above their biological benchmark, and catch (Fig. S3.1). Such patterns are likely due to temporal autocorrelation weakening compensatory biological and management processes. Increasing or decreasing the observation error associated with estimates of spawner abundance had negligible impacts on all performance metrics (Fig. S3.1). Increasing outcome uncertainty, particularly within mixed-stock fisheries had the strongest impact, with greater deviations between realized and target catch resulting in reduced performance across all conservation and catch metrics (Fig. S3.1). Such patterns are consistent with evidence that outcome uncertainty can negatively affect conservation and harvest objectives [@Holt2006]. Single-stock outcome uncertainty exhibited a weaker effect due to intermittent closures and lower mean target exploitation rates (Fig. S3.1).Changes in interannual variability in maturation age and en route mortality rates had relatively minor effects on all performance metrics. 
 
-Greater temporal autocorrelation in recruitment deviations led to declines in recruitment, escapement, the proportion of stocks above their biological benchmark, and catch (Fig. S3.1). Such patterns are likely due to temporal autocorrelation weakening compensatory biological and management processes. Changes in interannual variability in maturation age and en route mortality rates had relatively minor effects on all performance metrics. Regardless of the performance metric, however, 90% quantile intervals for each sensitivity scenario overlapped the reference opearting model (Fig. S3.1). Since this pattern was stable when allocations were fully single- or fully mixed-stock, our conclusions are unlikely to be biased by the magnitude of stochastic parameters.
+Regardless of the performance metric or focal parameter, however, 90% quantile intervals for each sensitivity scenario overlapped the reference opearting model (Fig. S3.1). Since this pattern was stable when allocations were fully single- or fully mixed-stock (not shown), the conclusions presented in the main text are unlikely to be biased by the magnitude of stochastic parameters.
 
 ```{r sensPlot, warnings=FALSE, messages=FALSE, fig.cap="Figure S3.1 Sensitivity of conservation- and catch-based performance metrics to stochastic parameters and temporal autocorrelation. All scenarios assume a 50% of the total allowable catch was allocated to each fishery. Horizontal lines represent the median (solid) estimate and 90th percentile intervals (dashed) from the reference operating model. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials."}
 panelPlot <- ggpubr::ggarrange(agDotPlotList[[1]], agDotPlotList[[2]],
                                agDotPlotList[[3]], agDotPlotList[[4]],
-                               agDotPlotList[[5]],
+                               agDotPlotList[[5]], 
+                               # agDotPlotList[[6]],
                                ncol = 3, nrow = 2, common.legend = TRUE,
                                legend = "right",
                                heights = c(0.85, 1))

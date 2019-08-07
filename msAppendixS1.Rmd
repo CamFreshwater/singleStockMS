@@ -51,6 +51,40 @@ library(kableExtra)
 
 # Operating Model
 
+## Larkin model
+
+Cyclic salmon stocks are typically modeled using an adaptation of the Ricker model, the Larkin model, featuring delayed density-dependence parameters [@Larkin1971]:
+
+Equation S4  $$log_{e}(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_{0,i}S_{i,y} - \beta_{1,i}S_{i,y-1} - \beta_{2,i}S_{i,y-2} - \beta_{3,i}S_{i,y-3} + w_{i,y}$$
+
+where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recruits, and $S$ the number of spawners. The parameter $\alpha$ represents the number of recruits produced per spawner at low abundance, while $\beta_{x}$ is the density-dependent parameter at time lag $x = $ 0, 1, 2, 3, 4. Stochastic recruitment deviations, $w_{i,y}$, are normally distributed with mean zero and variance $\sigma^2$. Fraser River sockeye salmon stocks modeled with a Larkin relationship contain one dominant and three off-cycle lines.
+
+## Recursive Bayes stock-recruit model
+
+We used a recursive Bayesian formulation of the Peterman et al. [-@Peterman2012] Kalman filter model, which accounts for temporal variability in the alpha parameter, to estimate Ricker and Larkin stock recruit parameters for each stock independently. The priors for most parameters were weakly informative (Table S1.1), except for $\alpha$ which was normally distributed with a mean and standard deviation taken from the posterior estimates of a stationary stock recruit analysis [@Freshwater2019]. We fit models using MCMC in JAGS [@Plummer2003] with the R package R2jags [@Su2015]. We confirmed model convergence using visual inspection of trace plots and Gelman-Rubin statistics. Each model run included four MCMC chains of 32,500 iterations, with a burn in of 15,000 and a thinning rate of 7.
+
+```{r priorsTable, results="asis"}
+priorsTable <- read.csv(here::here("data", "msTables", "priorsTable.csv"))
+#add parameters 
+parPriors <- c("ln$(\\alpha)$", "$S_{max}$", "$\\tau$", "$\\beta_{1-3}$")
+dist <- c("normal$(\\alpha_{stat.}, \\sigma_{\\alpha_{stat.}})$",
+          "lognormal(ln(max$(S_{obs.}), 1)$ truncated at 3 x max$(S_{obs.})$",
+          "gamma(0.001, 0.001)",
+          "uniform(0, 100")
+priorsTable <- priorsTable %>% 
+  mutate(Parameter = parPriors, 
+         Prior.Distribution = dist)
+csas_table(priorsTable,
+  caption = "Table S1.1. Priors for recursive Bayes stock recruit models.",
+  font_size = 20,
+  col_names = c("Parameter", "Description", "Prior Distribution")
+)
+```
+
+## En route mortality
+
+En route mortality was parameterized using observed differences in estimated abundance between in-river and spawning ground sampling sites (2000-2016; Pacific Salmon Commission, unpublished data). Stock-specific mean mortality rates, $d$, ranged from 0.04-0.60, with standard deviations, $\sigma_{mort}$, ranging from 0.17-0.48.
+
 ## Recruitment deviations
 
 Year- and stock-specific recruitment deviations $w_{i,y}$ in the forward simulation incorporated temporal autocorrelation and covariance in recruitment deviations among stocks
@@ -82,41 +116,13 @@ maxGamma <- max(cuPar$tauCycAge)
 
 where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters which scaled the size of deviations in equation (5) using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from $`r minGamma`$ - $`r maxGamma`$ among stocks.
 
-## Larkin model
-
-Cyclic salmon stocks are typically modeled using an adaptation of the Ricker model, the Larkin model, featuring delayed density-dependence parameters [@Larkin1971]:
-
-Equation S4  $$log_{e}(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_{0,i}S_{i,y} - \beta_{1,i}S_{i,y-1} - \beta_{2,i}S_{i,y-2} - \beta_{3,i}S_{i,y-3} + w_{i,y}$$
-
-where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recruits, and $S$ the number of spawners. The parameter $\alpha$ represents the number of recruits produced per spawner at low abundance, while $\beta_{x}$ is the density-dependent parameter at time lag $x = $ 0, 1, 2, 3, 4. Stochastic recruitment deviations, $w_{i,y}$, are normally distributed with mean zero and variance $\sigma^2$. Fraser River sockeye salmon stocks modeled with a Larkin relationship contain one dominant and three off-cycle lines.
-
-## Recursive Bayes stock-recruit model
-
-We used a recursive Bayesian formulation of the Peterman et al. [-@Peterman2012] Kalman filter model, which accounts for temporal variability in the alpha parameter, to estimate Ricker and Larkin stock recruit parameters for each stock independently. The priors for most parameters were weakly informative (Table S1.1), except for $\alpha$ which was normally distributed with a mean and standard deviation taken from the posterior estimates of a stationary stock recruit analysis [@Freshwater2019]. We fit models using MCMC in JAGS [@Plummer2003] with the R package R2jags [@Su2015]. We confirmed model convergence using visual inspection of trace plots and Gelman-Rubin statistics. Each model run included three MCMC chains of 250,000 iterations, with a burn in of 50,000 and a thinning rate of 50.
-
-```{r priorsTable, results="asis"}
-priorsTable <- read.csv(here::here("data", "msTables", "priorsTable.csv"))
-#add parameters 
-parPriors <- c("ln$(\\alpha)$", "$S_{max}$", "$\\tau$", "$\\beta_{1-3}$")
-dist <- c("normal$(\\alpha_{stat.}, \\sigma_{\\alpha_{stat.}})$",
-          "lognormal(ln(max$(S_{obs.}), 1)$ truncated at 3 x max$(S_{obs.})$",
-          "gamma(0.001, 0.001)",
-          "uniform(0, 100")
-priorsTable <- priorsTable %>% 
-  mutate(Parameter = parPriors, 
-         Prior.Distribution = dist)
-csas_table(priorsTable,
-  caption = "Table S1.1. Priors for recursive Bayes stock recruit models.",
-  font_size = 20,
-  col_names = c("Parameter", "Description", "Prior Distribution")
-)
-```
-
 # Management procedure
 
 ## Forecast error and outcome uncertainty
 
 The simulation model assumes that total catch is split into stock-specific target catch, $C_{targ,i}$, proportional to each stock's abundance in a given year. Fisheries managers clearly do not have access to this information in-season, but in the case of mixed-stock fisheries the assumption is valid because fish are assumed to be harvested proportionally to their abundance and the data used to parameterize outcome uncertainty incorporated forecast error. In the case of single-stock fisheries fish are not harvested proportionally to their abundance, but their are no data available to parameterize the stock-specific forecast process independently of outcome uncertainty. Preliminary investigations, however, suggest that incorporating forecast error when allocating aggregate total allowable catch to stock-specific catch results in reduced performance of single-stock fisheries relative to mixed due to intermittent overharvest.
+
+We parameterized $\sigma_{out}$ using observed deviations between target and realized exploitation rates in mixed-stock fisheries for Fraser River sockeye salmon MUs between 2006 and 2017. We fixed $\sigma_{out}$ at $`r simPar[["mixOUSig"]][1]`$ for both mixed- and single-stock fisheries since there is no evidence that terminal fisheries currently operating have larger deviations from management targets than marine fisheries (J. Scroggie, DFO Fisheries management, *personal communication*). 
 
 ## Harvest control rules
 
@@ -174,5 +180,7 @@ csas_table(frpTable,
 ```
 
 The TAM rule also differs from the generic HCR due to three additional adjustments. First, the TAM rule includes a constant escapement goal above the lower fishery reference point, resulting in a curvilinear increase in target exploitation rates as abundance increases, rather than the linear increase in Fig. S1. Second, harvest rates are typically lowered due to anticipated en-route mortality. We simulated this process by applying an en-route mortality adjustment, _pMA_, that acts as a scalar on escapement goals (the difference between return size and target catch). Thus a _pMA_ equal to 0 results in no adjustment, while a _pMA_ equal to 1 results in a 100% increase in the escapement goal. We parameterized this model component by setting the _pMA_ equal to the median _pMA_ observed for the Summer Run MU since 2000. Third, harvest rates are adjusted annually to reduce incidental harvest of co-migrating MUs that are at low abundance. We excluded this adjustment because we only modeled one MU (Summer Run stocks).
+
+
 
 _Literature Cited_

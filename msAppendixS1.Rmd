@@ -47,6 +47,11 @@ library(tidyverse)
 library(samSim)
 library(knitr)
 library(kableExtra)
+
+simPar <- read.csv(here::here("data", "manProcScenarios",
+                        "fraserMPInputs_varyAllocationVaryMixHCR.csv"),
+                   stringsAsFactors = F)
+cuPar <- read.csv(here::here("data/fraserCUPars.csv"), stringsAsFactors = F)
 ```
 
 # Operating Model
@@ -55,7 +60,7 @@ library(kableExtra)
 
 Cyclic salmon stocks are typically modeled using an adaptation of the Ricker model, the Larkin model, featuring delayed density-dependence parameters [@Larkin1971]:
 
-Equation S4  $$log_{e}(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_{0,i}S_{i,y} - \beta_{1,i}S_{i,y-1} - \beta_{2,i}S_{i,y-2} - \beta_{3,i}S_{i,y-3} + w_{i,y}$$
+Equation S1.1  $$log_{e}(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_{0,i}S_{i,y} - \beta_{1,i}S_{i,y-1} - \beta_{2,i}S_{i,y-2} - \beta_{3,i}S_{i,y-3} + w_{i,y}$$
 
 where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recruits, and $S$ the number of spawners. The parameter $\alpha$ represents the number of recruits produced per spawner at low abundance, while $\beta_{x}$ is the density-dependent parameter at time lag $x = $ 0, 1, 2, 3, 4. Stochastic recruitment deviations, $w_{i,y}$, are normally distributed with mean zero and variance $\sigma^2$. Fraser River sockeye salmon stocks modeled with a Larkin relationship contain one dominant and three off-cycle lines.
 
@@ -89,15 +94,16 @@ En route mortality was parameterized using observed differences in estimated abu
 
 Year- and stock-specific recruitment deviations $w_{i,y}$ in the forward simulation incorporated temporal autocorrelation and covariance in recruitment deviations among stocks
 
-Equation S1a $$w_{i,y} = w_{i,y-1}\tau + r_{i,y}$$
-Equation S1b $$r_i \sim MVN(0, \boldsymbol{\mathrm{V}})$$
-Equation S1c $$\boldsymbol{\mathrm{V}} =
+Equation S1.2a $$w_{i,y} = w_{i,y-1}\tau + r_{i,y}$$
+Equation S1.2b $$r_i \sim MVN(0, \boldsymbol{\mathrm{V}})$$
+Equation S1.2c $$\boldsymbol{\mathrm{V}} =
  \begin{bmatrix}
   \sigma'^2_1 & \rho\sigma'_1\sigma'_2 & \cdots & \rho\sigma'_1\sigma'_n \\
   \rho\sigma'_1\sigma'_2 & \sigma'^2_2 & \cdots & \rho\sigma'_2\sigma'_n \\
   \vdots  & \vdots  & \ddots & \vdots  \\
   \rho\sigma'_1\sigma'_n & \rho\sigma'_2\sigma_n & \cdots & \sigma'^2_n
  \end{bmatrix}$$
+ 
 where $w_{i,y-1}$ represents recruitment deviations one year prior, $\tau$ represents an autoregressive lag-1 year (AR1) correlation coefficient, and $r_{i,y}$ represents multivariate normally distributed error with a standard deviation defined by the variance-covariance matrix $\boldsymbol{\mathrm{V}}$, dimensioned by the number of stocks $n$. $\rho$ represents the pairwise correlation coefficient among stocks and was set to $`r simPar[["correlCU"]][1]`$ based on the mean observed correlation in recruitment deviations in recent years. We adjusted estimates of $\sigma$ to account for $\tau$ using the transformation, $\sigma'^2 = \sigma^2(1-\tau^2 )$, where $\sigma^2$ is the variance derived from a model without autocorrelation and $\sigma'^2$ is the adjusted value [@Pestal2011]. $\tau$ was set to 0.2 based on evidence of weak autocorrelation in the residuals of stock-recruit models from preliminary analyses.
 
 ## Age-at-maturity
@@ -107,7 +113,7 @@ Equation S2 $$ R'_{i,t} = R_{i,t-2}p_{2,i,t-2} + R_{i,t-3}p_{3,i,t-3} + R_{i,t-4
 
 We incorporated multivariate logistic variation in the proportion of mature fish returning at each age
 
-Equation S3 $$ p_{g,i,y} = \frac{ \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} {\sum_{2}^{5} \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} $$
+Equation S1.3 $$ p_{g,i,y} = \frac{ \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} {\sum_{2}^{5} \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} $$
 
 ```{r gammas, include=FALSE}
 minGamma <- min(cuPar$tauCycAge)
@@ -128,11 +134,11 @@ We parameterized $\sigma_{out}$ using observed deviations between target and rea
 
 The simulation model generated target harvest rates (for both fisheries combined) using a generic, abundance-based harvest control rule (HCR) proposed under Fisheries and Oceans Canada's Precautionary Approach Framework [@DFO2017b]. Specifically a minimal exploitation rate (10%) approximating incidental harvest was applied when MU-level abundance was less than 40% of the spawner abundance that would lead to maximumum sustainable yield ($0.4{S}_{MSY}$). When abundance was greater than 80% of that spawner abundance ($0.8{S}_{MSY}$), the exploitation rate at maximum sustainable yield (approximated by ${u}_{MSY}$) was applied (Fig. S1.1). When return abundance was between these two reference points, the target exploitation rate was a linear function of abundance:
 
-Equation 5 $$ u_{targ} = {u}_{MSY}({\frac{R' – 0.4{S}_{MSY}} {0.8{S}_{MSY} − 0.4{S}_{MSY}}}).$$
+Equation S1.4 $$ u_{targ} = {u}_{MSY}({\frac{R' – 0.4{S}_{MSY}} {0.8{S}_{MSY} − 0.4{S}_{MSY}}}).$$
 
 We calculated ${u}_{MSY}$ at the aggregate MU-level using the Lambert W function, $W(z)$ [@Scheuerell2016]:
 
-Equation 6 $$ {u}_{MSY} = 1 - W(e^{1 - \alpha_m})$$
+Equation S1.5 $$ {u}_{MSY} = 1 - W(e^{1 - \alpha_m})$$
 
 where $\alpha_m$ is an estimate of MU-level productivity calculated by fitting a Ricker model (Eq. 2 main text) to spawner and recruit abundance data summed among all summer-run stocks. All reference points were derived from aggregate benchmarks calculated after summing spawner and return abundances across stocks.
 
@@ -180,7 +186,5 @@ csas_table(frpTable,
 ```
 
 The TAM rule also differs from the generic HCR due to three additional adjustments. First, the TAM rule includes a constant escapement goal above the lower fishery reference point, resulting in a curvilinear increase in target exploitation rates as abundance increases, rather than the linear increase in Fig. S1. Second, harvest rates are typically lowered due to anticipated en-route mortality. We simulated this process by applying an en-route mortality adjustment, _pMA_, that acts as a scalar on escapement goals (the difference between return size and target catch). Thus a _pMA_ equal to 0 results in no adjustment, while a _pMA_ equal to 1 results in a 100% increase in the escapement goal. We parameterized this model component by setting the _pMA_ equal to the median _pMA_ observed for the Summer Run MU since 2000. Third, harvest rates are adjusted annually to reduce incidental harvest of co-migrating MUs that are at low abundance. We excluded this adjustment because we only modeled one MU (Summer Run stocks).
-
-
 
 _Literature Cited_

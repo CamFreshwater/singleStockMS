@@ -71,7 +71,7 @@ plotDat <- read.csv(here::here("outputs", "generatedData",
 ```
 
 
-# Stochastic parameter sensitivity analyses 
+# Sensitivity analyses 
 
 We conducted sensitivity analyses to evaluate how our conclusions may be impacted by the magnitude of temporal autocorrelation, observation error, outcome uncertainty, and interannual variation in stochastic parameters (age-at-maturity and en route mortality). For each parameter we selected upper and lower values (bounding plausible ranges; Table S3.1), held the remaining parameters constant, and compared distributions of performance metrics generated from 1500 Monte Carlo trials. We present results from a management procedure specifying equal allocations between mixed- and single-stock fisheries for all sensitivity scenarios. Additional analyses indicated that increasing the mixed-stock allocation increased the effect of mixed-stock fishery outcome uncertainty, while reducing the effect of single-stock outcome uncertainty. The opposite pattern occurred when single-stock fishery allocations were increased. Since the overall patterns remained similar these results are not shown.
 

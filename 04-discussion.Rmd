@@ -18,4 +18,4 @@ The decision to change allocations between mixed- and single-stock fisheries mus
 
 ## Supporting Information
 
-Detailed methods (Appendix S1), supplementary figures (Appendix S2), and sensitivity analyses (Appendix S3) are available online. The authors are solely responsible for the content and functionality of these materials. Queries (other than absence of the material) should be directed to the corresponding author.
+Detailed methods (Appendix S1), supplementary figures (Appendix S2), sensitivity analyses (Appendix S3), and code necessary to run the simulation model (*github repo*) are available online. The authors are solely responsible for the content and functionality of these materials. Queries (other than absence of the material) should be directed to the corresponding author.

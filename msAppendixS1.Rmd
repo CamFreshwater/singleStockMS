@@ -62,17 +62,17 @@ Cyclic salmon stocks are typically modeled using an adaptation of the Ricker mod
 
 Equation S1.1  $$log_{e}(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_{0,i}S_{i,y} - \beta_{1,i}S_{i,y-1} - \beta_{2,i}S_{i,y-2} - \beta_{3,i}S_{i,y-3} + w_{i,y}$$
 
-where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recruits, and $S$ the number of spawners. The parameter $\alpha$ represents the number of recruits produced per spawner at low abundance, while $\beta_{x}$ is the density-dependent parameter at time lag $x = $ 0, 1, 2, 3, 4. Stochastic recruitment deviations, $w_{i,y}$, are normally distributed with mean zero and variance $\sigma^2$. Fraser River sockeye salmon stocks modeled with a Larkin relationship contain one dominant and three off-cycle lines.
+where $i$ represents a stock, $y$ is a given brood year, $R$ the number of recruits, and $S$ the number of spawners. The parameter $\alpha$ represents the number of recruits produced per spawner at low abundance, while $\beta_{x}$ is the density-dependent parameter at time lag $x =$ 0, 1, 2, 3, 4. Stochastic recruitment deviations, $w_{i,y}$, are normally distributed with mean zero and variance $\sigma_{L,i}^2$. Fraser River sockeye salmon stocks modeled with a Larkin relationship contain one dominant and three off-cycle lines.
 
 ## Recursive Bayes stock-recruit model
 
-We used a recursive Bayesian formulation of the Peterman et al. [-@Peterman2012] Kalman filter model, which accounts for temporal variability in the alpha parameter, to estimate Ricker and Larkin stock recruit parameters for each stock independently. The priors for most parameters were weakly informative (Table S1.1), except for $\alpha$ which was normally distributed with a mean and standard deviation taken from the posterior estimates of a stationary stock recruit analysis [@Freshwater2019]. We fit models using MCMC in JAGS [@Plummer2003] with the R package R2jags [@Su2015]. We confirmed model convergence using visual inspection of trace plots and Gelman-Rubin statistics. Each model run included four MCMC chains of 32,500 iterations, with a burn in of 15,000 and a thinning rate of 7.
+We used a recursive Bayesian formulation of the Peterman et al. [-@Peterman2012] Kalman filter model, which accounts for temporal variability in the alpha parameter, to estimate Ricker and Larkin stock recruit parameters for each stock independently. The priors for most parameters were weakly informative as in Pestal et al. [-@Pestal2011] (Table S1.1), except for $\alpha$ which was normally distributed with a mean, $\alpha_{stat}$ and standard deviation, $\sigma_{{alpha}_{stat}}$, taken from the posterior estimates of a stationary stock recruit analysis [@Freshwater2019]. We fit models using MCMC in JAGS [@Plummer2003] with the R package R2jags [@Su2015]. We confirmed model convergence using visual inspection of trace plots and Gelman-Rubin statistics. Each model run included four MCMC chains of 32,500 iterations, with a burn in of 15,000 and a thinning rate of 7.
 
 ```{r priorsTable, results="asis"}
 priorsTable <- read.csv(here::here("data", "msTables", "priorsTable.csv"))
 #add parameters 
 parPriors <- c("ln$(\\alpha)$", "$S_{max}$", "$\\tau$", "$\\beta_{1-3}$")
-dist <- c("normal$(\\alpha_{stat.}, \\sigma_{\\alpha_{stat.}})$",
+dist <- c("normal$(\\alpha_{stat}, \\sigma^2_{\\alpha_{stat}})$",
           "lognormal(ln(max$(S_{obs.}), 1)$ truncated at 3 x max$(S_{obs.})$",
           "gamma(0.001, 0.001)",
           "uniform(0, 100")
@@ -104,7 +104,7 @@ Equation S1.2c $$\boldsymbol{\mathrm{V}} =
   \rho\sigma'_1\sigma'_n & \rho\sigma'_2\sigma_n & \cdots & \sigma'^2_n
  \end{bmatrix}$$
  
-where $w_{i,y-1}$ represents recruitment deviations one year prior, $\tau$ represents an autoregressive lag-1 year (AR1) correlation coefficient, and $r_{i,y}$ represents multivariate normally distributed error with a standard deviation defined by the variance-covariance matrix $\boldsymbol{\mathrm{V}}$, dimensioned by the number of stocks $n$. $\rho$ represents the pairwise correlation coefficient among stocks and was set to $`r simPar[["correlCU"]][1]`$ based on the mean observed correlation in recruitment deviations in recent years. We adjusted estimates of $\sigma$ to account for $\tau$ using the transformation, $\sigma'^2 = \sigma^2(1-\tau^2 )$, where $\sigma^2$ is the variance derived from a model without autocorrelation and $\sigma'^2$ is the adjusted value [@Pestal2011]. $\tau$ was set to 0.2 based on evidence of weak autocorrelation in the residuals of stock-recruit models from preliminary analyses.
+where $w_{i,y-1}$ represents recruitment deviations one year prior, $\tau$ represents an autoregressive lag-1 year (AR1) correlation coefficient, and $r_{i,y}$ represents multivariate normally distributed error with a standard deviation defined by the variance-covariance matrix $\boldsymbol{\mathrm{V}}$, dimensioned by the number of stocks $n$. $\rho$ represents the pairwise correlation coefficient among stocks and was set to $`r simPar[["correlCU"]][1]`$ based on the mean observed correlation in recruitment deviations in recent years. We adjusted estimates of $\sigma$ downwards from values in Eq. 1 to account for additional autocorrelated variability, $\tau$, using the transformation, $\sigma'^2 = \sigma^2(1-\tau^2 )$, where $\sigma^2$ is the variance derived from a model without autocorrelation and $\sigma'^2$ is the adjusted value [@Pestal2011]. $\tau$ was set to 0.2 based on evidence of weak autocorrelation in the residuals of stock-recruit models from preliminary analyses.
 
 ## Age-at-maturity
 
@@ -126,9 +126,9 @@ where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), t
 
 ## Forecast error and outcome uncertainty
 
-The simulation model assumes that total catch is split into stock-specific target catch, $C_{targ,i}$, proportional to each stock's abundance in a given year. Fisheries managers clearly do not have access to this information in-season, but in the case of mixed-stock fisheries the assumption is valid because fish are assumed to be harvested proportionally to their abundance and the data used to parameterize outcome uncertainty incorporated forecast error. In the case of single-stock fisheries fish are not harvested proportionally to their abundance, but their are no data available to parameterize the stock-specific forecast process independently of outcome uncertainty. Preliminary investigations, however, suggest that incorporating forecast error when allocating aggregate total allowable catch to stock-specific catch results in reduced performance of single-stock fisheries relative to mixed due to intermittent overharvest.
+The simulation model assumes that total catch is split into stock-specific target catch, $C_{targ,i}$, proportional to each stock's abundance in a given year. Although forecast errors in estimates of return abundances are not explicitly included here, data used to parameterize outcome uncertainty incorporated forecast error, and for the mixed-stock fisheries, fish are assumed to be harvested proportionally to abundance. In the case of single-stock fisheries, fish are not harvested proportionally to their abundance, but there are no data available to parameterize the stock-specific forecast process independently of outcome uncertainty. Preliminary investigations, however, suggest that incorporating forecast error when allocating aggregate total allowable catch to stock-specific catch results in reduced performance of single-stock fisheries, relative to mixed-, due to intermittent overharvest.
 
-We parameterized $\sigma_{out}$ using observed deviations between target and realized exploitation rates in mixed-stock fisheries for Fraser River sockeye salmon MUs between 2006 and 2017. We fixed $\sigma_{out}$ at $`r simPar[["mixOUSig"]][1]`$ for both mixed- and single-stock fisheries since there is no evidence that terminal fisheries currently operating have larger deviations from management targets than marine fisheries (J. Scroggie, DFO Fisheries management, *personal communication*). 
+We parameterized $\sigma_{out}$ using observed deviations between target and realized exploitation rates in mixed-stock fisheries for Fraser River sockeye salmon MUs between 2006 and 2017. We fixed $\sigma_{out}$ at $`r simPar[["mixOUSig"]][1]`$ for both mixed- and single-stock fisheries since there is no evidence that terminal fisheries currently operating differ from management targets than marine fisheries (J. Scroggie, DFO Fisheries management, *personal communication*). 
 
 ## Harvest control rules
 
@@ -179,7 +179,7 @@ We also evaluated the impact of an alternative HCR, a total allowable mortality 
 ```{r frpTable, results="asis"}
 frpTable <- read.csv(here::here("data", "msTables", "frpTable.csv"))
 csas_table(frpTable,
-  caption = "Table S2. Fishery reference points (FRP; in millions of fish) and maximum exploitation rates (ER) for the generic harvest control rule utilized in the main text and the total allowable mortality rule. Note that the first year of the simulation is on the 4th cycle line.",
+  caption = "Table S1.2. Fishery reference points (FRP; in millions of fish) and maximum exploitation rates (ER) for the generic harvest control rule utilized in the main text and the total allowable mortality rule. Note that the first year of the simulation is on the 4th cycle line.",
   font_size = 20,
   col_names = c("Harvest Control Rule", "Cycle", "Low FRP", "High FRP", "Maximum Target ER")
 )

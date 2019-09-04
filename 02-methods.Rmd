@@ -44,7 +44,7 @@ The structure of the operating model is equivalent to that in Freshwater et al. 
 
 Equation 1  $$log_e(\frac{R_{i,y}}{S_{i,y}}) = \alpha_i - \beta_iS_{i,y} + w_{i,y}$$
 
-where $i$ represents a stock, $y$ a given brood year, $R$ the number of recruits, and $S$ the number of spawners. $\alpha$ represents the number of recruits produced per spawner at low abundance (in log space), while $\beta$ is the density-dependent parameter (i.e. the reciprocal of spawner abundance maximizing recruitment). Recruitment deviations $w_{i,y}$ are normally distributed with mean 0 and variance $\sigma^2$.
+where $i$ represents a stock, $y$ a given brood year, $R$ the number of recruits, and $S$ the number of spawners. $\alpha$ represents the number of recruits produced per spawner at low abundance (in log space), while $\beta$ is the density-dependent parameter (i.e. the reciprocal of spawner abundance maximizing recruitment). Recruitment deviations $w_{i,y}$ are normally distributed with mean 0 and variance $\sigma_{i}^2$.
 
 A subset of Fraser River stocks are cyclic, exhibiting large differences in abundance at four-year intervals. We used a Larkin model, an extension of the Ricker model that accounts for delayed-density dependent effects [@Larkin1971], to simulate the dynamics of cyclic stocks (two of six stocks in the Summer Run MU; Appendix S1).
 

@@ -179,37 +179,40 @@ annotate_figure(panelHeat, bottom = text_grob("Productivity Scalar", size = 15,
                                  rot = 90))
 ```
 
-Trade-offs between mixed- and single-stock fisheries were sensitive to the structure of the harvest control rule. A more precautionary mixed-stock harvest control rule, which replicated the framework currently used by Fraser River sockeye salmon managers, still resulted in relative larger catches in mixed-stock fisheries, but did not exhibit evidence of recruitment overfishing (i.e. no backward bending curve as the poroportion of mixed-stock fisheries increased) (Appendix S2). Additionally, declines in conservation-based performance metrics with predominantly mixed-stock fisheries were more modest than those observed with the reference, generic mixed-stock harvest control rule (Appendix S2).
+Trade-offs between mixed- and single-stock fisheries were sensitive to the structure of the harvest control rule. A more precautionary mixed-stock harvest control rule, which replicated the framework currently used by Fraser River sockeye salmon managers, still resulted in relative larger catches in mixed-stock fisheries, but did not exhibit evidence of recruitment overfishing (i.e. no backward bending curve as the poroportion of mixed-stock fisheries increased) (Fig. \@ref(fig:altTO)a,b). Additionally, declines in conservation-based performance metrics with predominantly mixed-stock fisheries were more modest than those observed with the reference, generic mixed-stock harvest control rule (Fig. \@ref(fig:altTO)a,b).
 
-The timing of en route mortality also altered the trade-offs associated with fishery allocations. When en route mortality occurred before single-stock fisheries, median aggregate return abundance in predominantly single-stock fisheries declined relative to the reference operating model (Fig. \@ref(fig:erTO)). Additionally median aggregate catch in single-stock fisheries was considerably lower (Fig. \@ref(fig:erTO)). When en route mortality occurred before the fishery, average returns were maximized when fisheries were split evenly between mixed- and single-stock harvest, rather than being maximized under fully single-stock fisheries when en route mortality occurred after single-stock harvest.
+The timing of en route mortality also altered the trade-offs associated with fishery allocations. When en route mortality occurred before single-stock fisheries, median aggregate return abundance in predominantly single-stock fisheries declined relative to the reference operating model (Fig. \@ref(fig:altTO)a,c). Additionally median aggregate catch in single-stock fisheries was considerably lower (Fig. \@ref(fig:altTO)a,c). When en route mortality occurred before the fishery, average returns were maximized when fisheries were split evenly between mixed- and single-stock harvest, rather than being maximized under fully single-stock fisheries when en route mortality occurred after single-stock harvest.
 
-```{r erTO, warnings=FALSE, messages=FALSE, fig.cap="The impact of en route mortality timing, relative to single-stock fisheries, on trade-offs between aggregate return abundance and catch. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials. Note that panel (a) is the same as Fig. 1a and is presented here to facilitate comparison."}
-enRouteDat <- agDat %>% 
-  filter(mp == "Generic") %>% 
+```{r altTO, warnings=FALSE, messages=FALSE, fig.cap="The impact of an alternative mixed stock harvest control rule (b) and en-route mortality prior to single-stock fisheries (c), on trade-offs between aggregate return abundance and catch. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials. Note that panel (a) is the same as Fig. 1a and is presented here to facilitate comparison."}
+altOMDat <- agDat %>% 
   mutate(om = case_when(
     str_detect(om, "enRoute") ~ "En Route Mortality\nBefore Fishery",
-    str_detect(om, "ref") ~ "En Route Mortality\nAfter Fishery"
-  ))
-conLabels2 <- c("Median Aggregate\nReturn Abundance", 
-               "Proportion of CUs\nAbove Benchmark")
-omVec <- unique(enRouteDat$om)
-panelLabs <- data.frame(lab = c("a)", "b)"),
+    str_detect(om, "ref") & hcr == "genPA" ~ "Reference",
+    hcr == "TAM" ~ "TAM Rule"
+  ),
+  hcr = case_when(
+    hcr == "genPA" ~ "Generic",
+    TRUE ~ "TAM"
+  )) %>% 
+  mutate(om = fct_relevel(om, "Reference", "TAM Rule"))
+omVec <- unique(altOMDat$om)
+panelLabs <- data.frame(lab = c("a)", "b)", "c)"),
                         om = factor(omVec, levels = omVec))
-labY <- enRouteDat %>% 
+labY <- altOMDat %>% 
   filter(var == "medRecRY") %>% 
   select(lowQ) %>% 
   min()
-labX <- enRouteDat %>% 
+labX <- altOMDat %>% 
   filter(var == "medCatch") %>% 
   select(lowQ) %>% 
   min()
 
-plotAgTradeoff(enRouteDat %>% select(-labelledVar), consVar = "medRecRY", 
+plotAgTradeoff(altOMDat %>% select(-labelledVar), consVar = "medRecRY", 
                catchVar = "medCatch", facet = "om", 
                shape = NULL, showUncertainty = TRUE, 
                xLab = "Median Aggregate Catch", 
                yLab = "Median Aggregate Return", 
                legendLab = "Proportion\nMixed-Stock\nTAC",
-               axisSize = 15, dotSize = 6, legendSize = 13, lineSize = 1,
+               axisSize = 13, dotSize = 5, legendSize = 12, lineSize = 1,
                scaleAxis = "fixed", hotColors = FALSE, facetLetter = TRUE)
 ```

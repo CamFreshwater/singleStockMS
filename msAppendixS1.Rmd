@@ -174,7 +174,7 @@ abline(v = lowFRP, col = "red", lty = 2, lwd = 2)
 abline(v = highFRP, col = "darkgreen", lty = 2, lwd = 2)
 ```
 
-We also evaluated the impact of an alternative HCR, a total allowable mortality (TAM) rule, intended to approximate the management framework currently used for Fraser River sockeye salmon. As with the reference HCR, the TAM rule specifies annual target harvest rates based on return abundance relative to two fishery reference points. Unlike the generic HCR, however, the TAM rule reference points differ among cycle lines and are derived using expert knowledge, and the maximum target harvest rates are lower (Table S2).
+We also evaluated the impact of an alternative HCR, a total allowable mortality (TAM) rule, intended to approximate the management framework currently used for Fraser River sockeye salmon. As with the generic, reference HCR, the TAM rule specifies annual target harvest rates based on return abundance relative to two fishery reference points. Unlike the generic HCR, however, the TAM rule reference points differ among cycle lines and are derived using expert knowledge. In addition, the maximum target exploitation rates are lower than the $u_{MSY}$ value of 0.66 used in the generic HCR (Table S1.2).
 
 ```{r frpTable, results="asis"}
 frpTable <- read.csv(here::here("data", "msTables", "frpTable.csv"))

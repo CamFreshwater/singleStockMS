@@ -41,7 +41,7 @@ larkPars <- read.csv(here("data/trimRecursiveLarkinMCMCPars.csv"),
 tamFRP <- read.csv(here("data/tamRefPts.csv"), stringsAsFactors = F)
 
 ## Define simulations to be run
-nTrials <- 250
+nTrials <- 1300
 
 ## Make unique MP vector 
 simPar$nameMP <- paste(simPar$propMixHigh, simPar$singleHCR, "_", 
@@ -59,7 +59,6 @@ dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species),
 
 # Focal CUs and CU-specific PMs
 summCUs <- cuPar %>% 
-  filter(manUnit == "Summ") %>% 
   mutate(abbStkName = abbreviate(stkName, minlength = 4)) %>% 
   select(abbStkName) %>% 
   unlist()

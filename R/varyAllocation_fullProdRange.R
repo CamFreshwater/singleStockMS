@@ -42,7 +42,7 @@ tamFRP <- read.csv(here("data/tamRefPts.csv"), stringsAsFactors = F)
 
 
 ## Define simulations to be run
-nTrials <- 300
+nTrials <- 750
 
 ## Expand dataset to include full range of productivity regimes 
 prodScalars <- seq(0.5, 1.1, by = 0.05)
@@ -72,7 +72,7 @@ simParNew <- lapply(seq_along(prodScalars), function(x)
 
 dirNames <- unique(simParNew$nameOM)
 
-# recoverySim(simParNew[111, ], cuPar, catchDat = catchDat, srDat = srDat,
+# recoverySim(simParNew[10, ], cuPar, catchDat = catchDat, srDat = srDat,
 #             variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
 #             dirName = "testVaryP", nTrials = 5, makeSubDirs = FALSE, random = FALSE)
 

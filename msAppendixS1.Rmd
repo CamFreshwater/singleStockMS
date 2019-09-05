@@ -152,10 +152,10 @@ esc = rep(NA, length.out = 999)
 hr = rep(NA, length.out = 999)
 for (i in 1:length(ret)) {
   if (ret[i] < lowFRP) {
-    hr[i] <- 0.1
+    hr[i] <- 0.01
   }
   if (ret[i] > lowFRP & ret[i] < highFRP) {
-    hr[i] <- max(0.1, 
+    hr[i] <- max(0.01, 
                  uMsy * ((ret[i] - lowFRP) / (highFRP - lowFRP))
                  )
   }

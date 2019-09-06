@@ -31,7 +31,7 @@ larkPars <- read.csv(here("data/trimRecursiveLarkinMCMCPars.csv"),
 tamFRP <- read.csv(here("data/tamRefPts.csv"), stringsAsFactors = F)
 
 ## Define simulations to be run
-nTrials <- 750
+nTrials <- 1300
 
 ## Make unique MP vector 
 simPar$nameMP <- paste(simPar$propMixHigh, simPar$singleHCR, "_", 
@@ -55,11 +55,10 @@ summCUs <- cuPar %>%
 #------------------------------------------------------------------------------
 
 ## Run simulation
-# recoverySim(simParTrim[34,], cuPar, catchDat = catchDat, srDat = srDat,
+# recoverySim(simParTrim[1,], cuPar, catchDat = catchDat, srDat = srDat,
 #             variableCU = FALSE, ricPars, larkPars = larkPars, tamFRP = tamFRP,
 #             cuCustomCorrMat = cuCustomCorrMat, dirName = "Test", nTrials = 10,
 #             makeSubDirs = FALSE, random = FALSE)
-
 
 for (i in seq_along(dirNames)) {
   dirName <- dirNames[i]

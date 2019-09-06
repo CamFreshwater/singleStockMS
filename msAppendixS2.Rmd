@@ -131,18 +131,3 @@ panelFig <- ggarrange(agDotPlotList[[1]], agDotPlotList[[2]],
 annotate_figure(panelFig, bottom = text_grob("Proportion Mixed-Stock TAC",
                                              size = 17, vjust = -1))
 ```
-
-
-```{r hcrTO, echo=FALSE, warning=FALSE, warnings=FALSE, messages=FALSE, fig.cap="Figure S2.2 Comparison of generic multi-stock harvest control rule and a more precautionary total allowable mortality (TAM) rule. Points represent medians."}
-refDat2 <- agDat %>% 
-  filter(om == "ref") %>% 
-  mutate(hcr = mp)
-
-plotAgTradeoff(refDat2 %>% select(-labelledVar), consVar = "medRecRY", 
-               catchVar = "medCatch", facet = NULL, shape = "hcr",
-               showUncertainty = FALSE, xLab = "Median Aggregate Catch", 
-               yLab = "Median Aggregate Return", hotColors = FALSE,
-               legendLab = "Proportion\nMixed\nStock TAC",
-               axisSize = 15, dotSize = 6, legendSize = 13, lineSize = 1,
-               scaleAxis = "fixed")
-```

@@ -16,9 +16,8 @@ dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species),
                                                 sep = "_"))
 
 #ID stocks included in CU-specific analyses
-cuPar <- read.csv(here::here("data/fraserCUPars.csv"), stringsAsFactors = F)
+cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 summCUs <- cuPar %>% 
-  filter(manUnit == "Summ") %>% 
   mutate(abbStkName = abbreviate(stkName, minlength = 4)) %>% 
   select(abbStkName) %>% 
   unlist()
@@ -49,7 +48,7 @@ refDat <- agDat %>%
          mp == "Generic") 
 ```
 
-Large allocations to mixed-, rather than single-stock fisheries, resulted in reductions in aggregate conservation-based performance metrics, including median return abundance, median spawner abundance, and the mean proportion of stocks above their conservation benchmark (Fig. 1, Appendix S2). Conversely median aggregate catch and aggregate catch stability were maximized at intermediate allocations to mixed-stock fisheries (Fig. 1, Appendix S2). These impacts on conservation- and catch-based metrics were driven by differences in realized exploitation rates, which increased with mixed-stock fishery allocations (Appendix S2).
+Large allocations to mixed-, rather than single-stock fisheries, resulted in reductions in aggregate conservation performance, including median return abundance, median spawner abundance, and the mean proportion of stocks above their conservation benchmark (Fig. 1, Appendix S2). Conversely median aggregate catch and catch stability were maximized at intermediate allocations to mixed-stock fisheries (Fig. 1, Appendix S2). Impacts on conservation- and catch-based metrics were driven by differences in realized exploitation rates, which increased with mixed-stock fishery allocations (Appendix S2).
 
 ```{r recDecline, include=FALSE}
 f <- function(ppnM, V = "medRecRY") {
@@ -69,12 +68,12 @@ ppnDecline <- round((f(ppnM = "0", V = "ppnCULower") - f(ppnM = "0.5",
 At the aggregate scale, intermediate mixed-stock allocations optimized trade-offs between conservation- and catch-based objectives. For example, splitting total allowable catch evenly between mixed- and single-stock fisheries led to high median catches and modest declines in both median return abundance (`r recDecline`% decline relative to fully single-stock fisheries; Fig. \@ref(fig:aggTO)a) and the mean proportion of stocks above their conservation benchmark (`r ppnDecline`% decline; Fig. \@ref(fig:aggTO)b) relatively to fully single-stock fisheries.
 
 ```{r aggTO, warnings=FALSE, messages=FALSE, fig.cap="Trade-offs between aggregate conservation- and catch-based performance metrics across a range of mixed-stock fishery allocations. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials."}
-# Fig. 2 - Agg tradeoff plots
+# Fig. 1 - Agg tradeoff plots
 consVec <- c("medRecRY", "ppnCULower")
 catchVec <- rep(c("medCatch"), times = length(consVec))
 conLabels <- c("Median Aggregate\nReturn Abundance", 
                "Proportion of Stocks\nAbove Benchmark")
-panelLabs <- data.frame(lab = c("a)", "b)"),
+panelLabs <- data.frame(lab = c("(a)", "(b)"),
                         var = factor(consVec, 
                                      levels = unique(consVec)))
 dum <- refDat %>% 
@@ -100,9 +99,9 @@ annotate_figure(panelTO, bottom = ggpubr::text_grob("Median Aggregate Catch",
                                                    size = 15, vjust = -0.5))
 ```
 
-Trade-offs were more nuanced at the scale of individual stocks. For example, abundant and relatively productive stocks either were insensitive (Harrison stock, Fig. \@ref(fig:cuTO)) or responded positively (Chilko CU, Fig. \@ref(fig:cuTO)) to increases in mixed-stock fishery allocations. In both cases, single-stock fisheries were rarely closed (because the stock remained above its biological benchmark), resulting in exploitation rates that were independent of fishery allocation. In the case of the Chilko stock, rare single-stock closures had negative impacts because they resulted in large spawner abundances that exceeded capacity and reduced abundance in subsequent years.
+Trade-offs were more nuanced at the scale of individual stocks. For example, abundant and relatively productive stocks either were insensitive (Harrison, Fig. \@ref(fig:cuTO)) or responded positively (Chilko, Fig. \@ref(fig:cuTO)) to increases in mixed-stock fishery allocations. In both cases, single-stock fisheries were rarely closed because the stock typically remained above its biological benchmark, resulting in exploitation rates that were independent of fishery allocation. In the case of the Chilko stock, rare single-stock closures had negative impacts because they resulted in large spawner abundances that exceeded capacity and reduced abundance in subsequent years.
 
-More commonly, however, larger mixed-stock fishery allocations resulted in  declines in return abundance and ultimately catch due to recruitment overfishing (Fig. \@ref(fig:cuTO)). These effects were particularly severe in the least abundant stock, Raft, which exhibited strong declines when mixed-stock fishery allocations exceeded 25% (Fig. \@ref(fig:cuTO)). For other stocks catches declined when mixed-stock allocations exceeded 50%.
+More commonly, however, larger mixed-stock fishery allocations resulted in  declines in return abundance and ultimately catch due to recruitment overfishing (Fig. \@ref(fig:cuTO)). These effects were particularly severe in the least abundant stock, Raft, which exhibited strong declines in abundance when mixed-stock fishery allocations exceeded 25% (Fig. \@ref(fig:cuTO)). For other stocks abundance declined when mixed-stock allocations exceeded 50%.
 
 ```{r cuTO, warnings=FALSE, messages=FALSE, fig.cap="Trade-offs between stock-specific return abundance and catch across a range of mixed-stock fishery allocations. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials."}
 cuVarsToPlot <- c("medRecRY", "medSpawners", "medCatch", "ppnYrsUpper",
@@ -161,7 +160,7 @@ plotHeat <- function(plotVar = "medRecRY", legName = "rec", bins = 30,
 }
 ```
 
-Increases or decreases in population productivity changed the effect of fishery allocations on conservation- and catch-based metrics. At high levels of productivity, increasing single-stock fishery allocations resulted in relatively large increases in the proportion of stocks above the conservation threshold; however as productivity declined the relative difference between predominantly mixed- and single-stock fishery decreased (Fig. \@ref(fig:prodTO) left). Conversely, median catch was maximized at intermediate allocations (~75% mixed stock) when productivity was high, but as productivity declined predominantly single-stock fisheries began to provide greater catches (Fig. \@ref(fig:prodTO) right). 
+Changes in population productivity altered the effect of fishery allocations on conservation- and catch-based metrics. At high levels of productivity, increasing single-stock fishery allocations resulted in relatively large increases in the proportion of stocks above the conservation threshold; however as productivity declined the relative difference between predominantly mixed- and single-stock fishery decreased (Fig. \@ref(fig:prodTO) left). Conversely, median catch was maximized at intermediate allocations (~75% mixed stock) when productivity was high, but as productivity declined predominantly single-stock fisheries began to provide slightly greater catches (Fig. \@ref(fig:prodTO) right). 
 
 ```{r prodTO, warnings=FALSE, messages=FALSE, fig.cap="Impacts of changes in productivity on median proportion of stocks above their conservation benchmark, $S_{con}$ (left) and median aggregate catch (right) across a range of mixed-stock fishery allocations. Productivity is moderated by a scalar applied uniformly to the most recent estimate for each stock so that the data shown with productivity scalar = 1 is equivalent to Fig 2b."}
 dumLab <- expression(atop('Ppn. Stocks', 'Above S'[con]))
@@ -179,9 +178,9 @@ annotate_figure(panelHeat, bottom = text_grob("Productivity Scalar", size = 15,
                                  rot = 90))
 ```
 
-Trade-offs between mixed- and single-stock fisheries were sensitive to the structure of the harvest control rule. A more precautionary mixed-stock harvest control rule, which replicated the framework currently used by Fraser River sockeye salmon managers, still resulted in relative larger catches in mixed-stock fisheries, but did not exhibit evidence of recruitment overfishing (i.e. no backward bending curve as the poroportion of mixed-stock fisheries increased) (Fig. \@ref(fig:altTO)a,b). Additionally, declines in conservation-based performance metrics with predominantly mixed-stock fisheries were more modest than those observed with the reference, generic mixed-stock harvest control rule (Fig. \@ref(fig:altTO)a,b).
+Trade-offs between mixed- and single-stock fisheries were sensitive to the structure of the harvest control rule. A more precautionary mixed-stock harvest control rule, which replicated the framework currently used by Fraser River sockeye salmon managers, still resulted in relatively larger catches in mixed-stock fisheries, but did not exhibit evidence of recruitment overfishing (i.e. no backward bending curve as the poroportion of mixed-stock fisheries increased) (Fig. \@ref(fig:altTO)a,b). Additionally, declines in conservation-based performance metrics with predominantly mixed-stock fisheries were more modest than those observed with the reference, generic mixed-stock harvest control rule (Fig. \@ref(fig:altTO)a,b).
 
-The timing of en route mortality also altered the trade-offs associated with fishery allocations. When en route mortality occurred before single-stock fisheries, median aggregate return abundance in predominantly single-stock fisheries declined relative to the reference operating model (Fig. \@ref(fig:altTO)a,c). Additionally median aggregate catch in single-stock fisheries was considerably lower (Fig. \@ref(fig:altTO)a,c). When en route mortality occurred before single-stock fisheries, average returns were maximized when fisheries were split evenly between mixed- and single-stock harvest, rather than being maximized under fully single-stock fisheries when en route mortality occurred after single-stock harvest.
+The timing of en route mortality also altered trade-offs associated with fishery allocations. When en route mortality occurred before single-stock fisheries, median aggregate return abundance in predominantly single-stock fisheries declined relative to the reference operating model (Fig. \@ref(fig:altTO)a,c). Additionally median aggregate catch in single-stock fisheries was considerably lower (Fig. \@ref(fig:altTO)a,c). When en route mortality occurred before single-stock fisheries, average returns were maximized when fisheries were split evenly between mixed- and single-stock harvest, rather than being maximized under fully single-stock fisheries when en route mortality occurred after single-stock harvest.
 
 ```{r altTO, warnings=FALSE, messages=FALSE, fig.cap="The impact of an alternative mixed stock harvest control rule (b) and en route mortality prior to single-stock fisheries (c), on trade-offs between aggregate return abundance and catch. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials. Note that panel (a) is the same as Fig. 1a and is presented here to facilitate comparison."}
 altOMDat <- agDat %>% 
@@ -196,7 +195,7 @@ altOMDat <- agDat %>%
   )) %>% 
   mutate(om = fct_relevel(om, "Reference", "TAM Rule"))
 omVec <- unique(altOMDat$om)
-panelLabs <- data.frame(lab = c("a)", "b)", "c)"),
+panelLabs <- data.frame(lab = c("(a)", "(b)", "(c)"),
                         om = factor(omVec, levels = omVec))
 labY <- altOMDat %>% 
   filter(var == "medRecRY") %>% 

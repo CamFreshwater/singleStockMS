@@ -51,7 +51,7 @@ library(kableExtra)
 simPar <- read.csv(here::here("data", "manProcScenarios",
                         "fraserMPInputs_varyAllocationVaryMixHCR.csv"),
                    stringsAsFactors = F)
-cuPar <- read.csv(here::here("data/fraserCUPars.csv"), stringsAsFactors = F)
+cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 ```
 
 # Operating Model
@@ -108,7 +108,7 @@ where $w_{i,y-1}$ represents recruitment deviations one year prior, $\tau$ repre
 
 ## Age-at-maturity
 
-Although the majority of Fraser River sockeye salmon mature at age 4 (i.e. one winter as eggs, one winter as fry in lakes, and two ocean winters), smaller proportions mature at ages 2, 3, and 5, with age structure varying among stocks We modeled this process by calculating the number of individuals returning to spawn $R'_{i,t}$ in return year $t$ in stock as a function of the total number of adult recruits $R$ generated in previous brood years, multiplied by the proportion $p$ of fish that return at a given age $g$ 
+Although the majority of Fraser River sockeye salmon mature at age 4 (i.e. one winter as eggs, one winter as fry in lakes, and two ocean winters), smaller proportions mature at ages 2, 3, and 5, with age structure varying among stocks. We modeled this process by calculating the number of individuals returning to spawn $R'_{i,t}$ in return year $t$ in stock as a function of the total number of adult recruits $R$ generated in previous brood years, multiplied by the proportion $p$ of fish that return at a given age $g$ 
 Equation S2 $$ R'_{i,t} = R_{i,t-2}p_{2,i,t-2} + R_{i,t-3}p_{3,i,t-3} + R_{i,t-4}p_{4,i,t-4} + R_{i,t-5}p_{5,i,t-5}. $$
 
 We incorporated multivariate logistic variation in the proportion of mature fish returning at each age
@@ -120,19 +120,19 @@ minGamma <- min(cuPar$tauCycAge)
 maxGamma <- max(cuPar$tauCycAge)
 ```
 
-where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters which scaled the size of deviations in equation (5) using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from $`r minGamma`$ - $`r maxGamma`$ among stocks.
+where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters, which scaled the size of deviations in Eq. S1.3, using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from $`r minGamma`$ - $`r maxGamma`$ among stocks.
 
 # Management procedure
 
 ## Forecast error and outcome uncertainty
 
-The simulation model assumes that total catch is split into stock-specific target catch, $C_{targ,i}$, proportional to each stock's abundance in a given year. Although forecast errors in estimates of return abundances are not explicitly included here, data used to parameterize outcome uncertainty incorporated forecast error, and for the mixed-stock fisheries, fish are assumed to be harvested proportionally to abundance. In the case of single-stock fisheries, fish are not harvested proportionally to their abundance, but there are no data available to parameterize the stock-specific forecast process independently of outcome uncertainty. Preliminary investigations, however, suggest that incorporating forecast error when allocating aggregate total allowable catch to stock-specific catch results in reduced performance of single-stock fisheries, relative to mixed-, due to intermittent overharvest.
+The simulation model assumes that total catch is split into stock-specific target catch, $C_{targ,i}$, proportional to each stock's abundance in a given year. Although forecast errors in estimates of return abundances are not explicitly included here, data used to parameterize outcome uncertainty incorporated forecast error, and for the mixed-stock fisheries, fish are assumed to be harvested proportionally to abundance. In the case of single-stock fisheries, fish are not harvested proportionally to their abundance, but there are no data available to parameterize the stock-specific forecast process independently of outcome uncertainty. Preliminary investigations, however, suggest that incorporating forecast error when allocating aggregate total allowable catch to stock-specific catch results in reduced performance of single-stock fisheries, relative to mixed-stock, due to intermittent overharvest (not shown).
 
-We parameterized $\sigma_{out}$ using observed deviations between target and realized exploitation rates in mixed-stock fisheries for Fraser River sockeye salmon MUs between 2006 and 2017. We fixed $\sigma_{out}$ at $`r simPar[["mixOUSig"]][1]`$ for both mixed- and single-stock fisheries since there is no evidence that terminal fisheries currently operating differ from management targets than marine fisheries (J. Scroggie, DFO Fisheries management, *personal communication*). 
+We parameterized $\sigma_{out}$ using observed deviations between target and realized exploitation rates in mixed-stock fisheries for Fraser River sockeye salmon MUs between 2006 and 2017. We fixed $\sigma_{out}$ at $`r simPar[["mixOUSig"]][1]`$ for both mixed- and single-stock fisheries since there is no evidence that terminal fisheries currently operating differ from marine fisheries in meeting management targets (J. Scroggie, DFO Fisheries management, *personal communication*). 
 
 ## Harvest control rules
 
-The simulation model generated target harvest rates (for both fisheries combined) using a generic, abundance-based harvest control rule (HCR) proposed under Fisheries and Oceans Canada's Precautionary Approach Framework [@DFO2017b]. Specifically a minimal exploitation rate (10%) approximating incidental harvest was applied when MU-level abundance was less than 40% of the spawner abundance that would lead to maximumum sustainable yield ($0.4{S}_{MSY}$). When abundance was greater than 80% of that spawner abundance ($0.8{S}_{MSY}$), the exploitation rate at maximum sustainable yield (approximated by ${u}_{MSY}$) was applied (Fig. S1.1). When return abundance was between these two reference points, the target exploitation rate was a linear function of abundance:
+The simulation model generated target harvest rates (for both fisheries combined) using a generic, abundance-based harvest control rule (HCR) proposed under Fisheries and Oceans Canada's Precautionary Approach Framework [@DFO2017b]. Specifically a minimal exploitation rate (0.05%) was applied when MU-level abundance was less than 40% of the spawner abundance that would lead to maximumum sustainable yield ($0.4{S}_{MSY}$). When abundance was greater than 80% of that spawner abundance ($0.8{S}_{MSY}$), the exploitation rate at maximum sustainable yield (approximated by ${u}_{MSY}$) was applied (Fig. S1.1). When return abundance was between these two reference points, the target exploitation rate was a linear function of abundance:
 
 Equation S1.4 $$ u_{targ} = {u}_{MSY}({\frac{R' – 0.4{S}_{MSY}} {0.8{S}_{MSY} − 0.4{S}_{MSY}}}).$$
 
@@ -142,7 +142,7 @@ Equation S1.5 $$ {u}_{MSY} = 1 - W(e^{1 - \alpha_m})$$
 
 where $\alpha_m$ is an estimate of MU-level productivity calculated by fitting a Ricker model (Eq. 2 main text) to spawner and recruit abundance data summed among all summer-run stocks. All reference points were derived from aggregate benchmarks calculated after summing spawner and return abundances across stocks.
 
-```{r genHCR, warnings=FALSE, messages=FALSE, fig.cap="Figure S1.1. Generic, abundance-based harvest control rule used to calculate target exploitation rates. Dashed vertical lines represent lower (red) and upper (green) fishery reference points equivalent to $0.4{S}_{MSY}$ and $0.8{S}_{MSY}$, respectively. The maximum exploitation rate is equal to ${u}_{MSY}$ (0.66 for the Summer Run MU aggregate). The inflection point in exploitation rate does not fall on the lower fishery reference point because we assumed that an exploitation rate less than 0.1 was not realistic given incidental harvest in other fisheries."}
+```{r genHCR, warnings=FALSE, messages=FALSE, fig.cap="Figure S1.1. Generic, abundance-based harvest control rule used to calculate target exploitation rates. Dashed vertical lines represent lower (red) and upper (green) fishery reference points equivalent to $0.4{S}_{MSY}$ and $0.8{S}_{MSY}$, respectively. The maximum exploitation rate is equal to ${u}_{MSY}$ (0.66 for the Summer Run MU aggregate)."}
 cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 uMsy <- cuPar$uMSY[1]
 lowFRP <- cuPar$lowFRP[1]
@@ -152,10 +152,10 @@ esc = rep(NA, length.out = 999)
 hr = rep(NA, length.out = 999)
 for (i in 1:length(ret)) {
   if (ret[i] < lowFRP) {
-    hr[i] <- 0.01
+    hr[i] <- 0.005
   }
   if (ret[i] > lowFRP & ret[i] < highFRP) {
-    hr[i] <- max(0.01, 
+    hr[i] <- max(0.005, 
                  uMsy * ((ret[i] - lowFRP) / (highFRP - lowFRP))
                  )
   }
@@ -174,7 +174,7 @@ abline(v = lowFRP, col = "red", lty = 2, lwd = 2)
 abline(v = highFRP, col = "darkgreen", lty = 2, lwd = 2)
 ```
 
-We also evaluated the impact of an alternative HCR, a total allowable mortality (TAM) rule, intended to approximate the management framework currently used for Fraser River sockeye salmon. As with the generic, reference HCR, the TAM rule specifies annual target harvest rates based on return abundance relative to two fishery reference points. Unlike the generic HCR, however, the TAM rule reference points differ among cycle lines and are derived using expert knowledge. In addition, the maximum target exploitation rates are lower than the $u_{MSY}$ value of 0.66 used in the generic HCR (Table S1.2).
+We also evaluated the impact of an alternative HCR, a total allowable mortality (TAM) rule, intended to approximate the management framework currently used for Fraser River sockeye salmon. As with the generic, reference HCR, the TAM rule specifies annual target harvest rates based on return abundance relative to two fishery reference points. Unlike the generic HCR, however, the TAM rule reference points differ among cycle lines and were derived using expert knowledge [@Pestal2011]. In addition, the maximum target exploitation rates are lower than the $u_{MSY}$ value of 0.66 used in the generic HCR (Table S1.2).
 
 ```{r frpTable, results="asis"}
 frpTable <- read.csv(here::here("data", "msTables", "frpTable.csv"))
@@ -185,6 +185,6 @@ csas_table(frpTable,
 )
 ```
 
-The TAM rule also differs from the generic HCR due to three additional adjustments. First, the TAM rule includes a constant escapement goal above the lower fishery reference point, resulting in a curvilinear increase in target exploitation rates as abundance increases, rather than the linear increase in Fig. S1. Second, harvest rates are typically lowered due to anticipated en-route mortality. We simulated this process by applying an en-route mortality adjustment, _pMA_, that acts as a scalar on escapement goals (the difference between return size and target catch). Thus a _pMA_ equal to 0 results in no adjustment, while a _pMA_ equal to 1 results in a 100% increase in the escapement goal. We parameterized this model component by setting the _pMA_ equal to the median _pMA_ observed for the Summer Run MU since 2000. Third, harvest rates are adjusted annually to reduce incidental harvest of co-migrating MUs that are at low abundance. We excluded this adjustment because we only modeled one MU (Summer Run stocks).
+The TAM rule also differs from the generic HCR due to three additional adjustments. First, the TAM rule includes a constant escapement goal above the lower fishery reference point, resulting in a curvilinear increase in target exploitation rates as abundance increases, rather than the linear increase in Fig. S1.1. Second, harvest rates are often reduced by managers due to anticipated en-route mortality. We simulated this process by applying an en-route mortality adjustment, _pMA_, that acts as a scalar on escapement goals (the difference between return size and target catch). Thus a _pMA_ equal to 0 results in no adjustment, while a _pMA_ equal to 1 results in a 100% increase in the escapement goal. We parameterized this model component by setting the _pMA_ equal to the median _pMA_ observed for the Summer Run MU since 2000. Third, harvest rates are adjusted annually to reduce incidental harvest of co-migrating MUs that are at low abundance. We excluded this adjustment because we only modeled one MU (Summer Run stocks) here.
 
 _Literature Cited_

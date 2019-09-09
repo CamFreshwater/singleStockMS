@@ -56,7 +56,6 @@ cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 
 # Focal CUs and CU-specific PMs
 summCUs <- cuPar %>% 
-  filter(manUnit == "Summ") %>% 
   mutate(abbStkName = abbreviate(stkName, minlength = 4)) %>% 
   select(abbStkName) %>% 
   unlist()

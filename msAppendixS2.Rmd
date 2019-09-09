@@ -55,9 +55,8 @@ dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species),
                                                 sep = "_"))
 
 #ID stocks included in CU-specific analyses
-cuPar <- read.csv(here::here("data/fraserCUPars.csv"), stringsAsFactors = F)
+cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 summCUs <- cuPar %>% 
-  filter(manUnit == "Summ") %>% 
   mutate(abbStkName = abbreviate(stkName, minlength = 4)) %>% 
   select(abbStkName) %>% 
   unlist()

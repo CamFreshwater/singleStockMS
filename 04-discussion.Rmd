@@ -1,4 +1,4 @@
-# Discussion
+# 4. Discussion
 
 Shifting harvest from mixed- to single-stock fisheries may provide a means of maximizing harvest opportunities on abundant populations while minimizing risks to sympatric stocks of concern. While increasing stock selectivity has intuitive conservation benefits for fisheries [@Walters2008; @Taylor2009], the trade-offs among harvest and conservation objectives of such a transition are rarely quantified. Using a stochastic, closed-loop simulation model, we found that increasing allocations to single-stock fisheries resulted in improved conservation performance, albeit at the cost of reduced catches. However, we also determined that trade-offs between objectives were sensitive to the ecological scale of performance metrics, the structure of each fishery's harvest control rule, and the population dynamics within the stock aggregate.
 
@@ -16,6 +16,14 @@ Options to increase stock selectivity are limited when a salmon aggregate contai
 
 The decision to change allocations between mixed- and single-stock fisheries must ultimately incorporate diverse socio-economic factors. For example, the landed value per weight of terminal catches will be lower than marine caught fish, leading to reduced commercial opportunity, because salmon expend large portions of their energy reserves while migrating [@Taylor2009]. Perhaps more importantly, increasing single-stock harvest will result in changes in access among user groups. Ideally a full management strategy evaluation could be used to specify conservation and socio-economic objectives of all stakeholders, then quantify trade-offs prior to changes in allocation [@Punt2016]. Nevertheless, these simulations demonstrate that intermediate strategies that incorporate both mixed- and single-stock fisheries may improve conservation performance while minimizing reductions in catch. 
 
-## Supporting Information
+## Acknowledgements
 
-Detailed methods (Appendix S1), supplementary figures (Appendix S2), sensitivity analyses (Appendix S3), and code necessary to run the simulation model (https://github.com/CamFreshwater/singleStockMS) are available online. The authors are solely responsible for the content and functionality of these materials. Queries (other than absence of the material) should be directed to the corresponding author.
+This work would not have been possible without the efforts of the many biologists and technicians who collected the Fraser River sockeye salmon escapement data. We are grateful to Brendan Connors, Micahel Folkes, James Robinson, and Travis Tai for helpful advice. We also thank Catarina Wor for valuable feedback on an earlier draft of the manuscript and Catherine Michielsens for assistance implementing recursive Bayes stock recruit models.
+
+## Appendix A. Supplementary methods
+
+Additional details on the simulation's model operating model and management procedure are available in the online version.
+
+## Appendix B. Sensitivity analyses
+
+Analyses to evaluate the impact of temporal autocorrelation, observation error, outcome uncertainty, and interannual variation in stochastic parameters on our conclusions are available in the online version.

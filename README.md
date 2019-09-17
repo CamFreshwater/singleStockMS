@@ -20,11 +20,11 @@ install.packages("devtools")
 devtools::install_github("CamFreshwater/samSim")
 ```
 
-The manuscript was written using the `csasdown` package in R Markdown, an extension of the `bookdown` package. As a result a large number of directories contain information necessary to "knit" the document, but are not directly relevant to the analysis, and some naming conventions and formatting will appear unusual. 
+The manuscript was written using the `csasdown` package in R Markdown, an extension of the `bookdown` package. As a result a large number of directories contain information necessary to "knit" the document, but are not directly relevant to the analysis, and some naming conventions and formatting will appear unusual. To recreate the manuscript (after running the simulations found in `R/varyAllocation_mainSimRun.R` and `R/varyAllocation_fullProdRange.R`) simply knit the entire document using `index.Rmd`.
 
 A summary of the relevant files is provided below. Most functions are provided in `samSim` and contain relatively detailed documentation (and sometimes functioning examples). Details on how to run a simulation are provided in exampleSimRun.Rmd in the `samSim` package's repository under Rmd directory. Details on the operating model (biological dynamics and fishery interactions) and the management procedures (harvest control rule and assessment process) will be provided in the `samSim` vignette at a future date.
 
-Zenodo: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2594082.svg)](https://doi.org/10.5281/zenodo.2594082)
+Zenodo: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3432483.svg)](https://doi.org/10.5281/zenodo.3432483)
 
 -----
 

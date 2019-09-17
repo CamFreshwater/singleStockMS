@@ -146,4 +146,4 @@ k
 
 We initialized the simulation with stock-specific time series of spawner and recruit abundance and ran the simulation for `r simPar[["simYears"]][1]` years (approximately `r round(simPar[["simYears"]][1]/4, 0)` generations). We summarized performance metrics across 1500 Monte Carlo trials (convergence occurred after approximately 1200). 
 
-The simulation model is available in the _samSim_ package (available at https://github.com/CamFreshwater/samSim) and the code necessary to run the analyses are available at https://github.com/CamFreshwater/singleStockMS.
+The simulation model is available in the _samSim_ package (available at https://github.com/CamFreshwater/samSim) and the code necessary to run the analyses are available at https://doi.org/10.5281/zenodo.3432483.

@@ -18,7 +18,7 @@ The decision to change allocations between mixed- and single-stock fisheries mus
 
 ## Acknowledgements
 
-This work would not have been possible without the efforts of the many biologists and technicians who collected the Fraser River sockeye salmon escapement data. We are grateful to Brendan Connors, Micahel Folkes, James Robinson, and Travis Tai for helpful advice. We also thank Catarina Wor for valuable feedback on an earlier draft of the manuscript and Catherine Michielsens for assistance implementing recursive Bayes stock recruit models.
+This work would not have been possible without the efforts of the many biologists and technicians who collected the Fraser River sockeye salmon escapement data. We are grateful to Brendan Connors, Micahel Folkes, James Robinson, and Travis Tai for helpful advice. We also thank Catarina Wor for valuable feedback on an earlier draft of the manuscript and Catherine Michielsens for assistance implementing recursive Bayes stock recruit models. This project was supported by Fisheries and Oceans Canada through the Strategic Program for Ecosystem-based Research and Advice (SPERA).
 
 ## Appendix A. Supplementary methods
 

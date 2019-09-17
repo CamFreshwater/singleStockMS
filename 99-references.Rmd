@@ -6,7 +6,7 @@ In general, you shouldn't need to edit this file.
 
 \clearpage
 
-# REFERENCES {-}
+# LITERATURE CITED {-}
 <!--This manually sets the header for this unnumbered chapter.-->
 \markboth{References}{References}
 

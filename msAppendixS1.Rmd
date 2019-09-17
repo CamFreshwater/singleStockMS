@@ -54,7 +54,9 @@ simPar <- read.csv(here::here("data", "manProcScenarios",
 cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 ```
 
-# Operating Model
+# Appendix A - Supplementary Methods
+
+## 1. Operating Model
 
 ```{r priorsTable, results="asis"}
 priorsTable <- read.csv(here::here("data", "msTables", "priorsTable.csv"))
@@ -74,7 +76,7 @@ csas_table(priorsTable,
 )
 ```
 
-## Recruitment deviations
+### 1.1 Recruitment deviations
 
 Year- and stock-specific recruitment deviations $w_{i,y}$ in the forward simulation incorporated temporal autocorrelation and covariance in recruitment deviations among stocks
 
@@ -90,7 +92,7 @@ Equation A1c $$\boldsymbol{\mathrm{V}} =
  
 where $w_{i,y-1}$ represents recruitment deviations one year prior, $\tau$ represents an autoregressive lag-1 year (AR1) correlation coefficient, and $r_{i,y}$ represents multivariate normally distributed error with a standard deviation defined by the variance-covariance matrix $\boldsymbol{\mathrm{V}}$, dimensioned by the number of stocks $n$. $\rho$ represents the pairwise correlation coefficient among stocks and was set to $`r simPar[["correlCU"]][1]`$ based on the mean observed correlation in recruitment deviations in recent years. We adjusted estimates of $\sigma$ downwards from values in Eq. 1 to account for additional autocorrelated variability, $\tau$, using the transformation, $\sigma'^2 = \sigma^2(1-\tau^2 )$, where $\sigma^2$ is the variance derived from a model without autocorrelation and $\sigma'^2$ is the adjusted value [@Pestal2011]. $\tau$ was set to 0.2 based on evidence of weak autocorrelation in the residuals of stock-recruit models from preliminary analyses.
 
-## Age-at-maturity
+### 1.2 Age-at-maturity
 
 Although the majority of Fraser River sockeye salmon mature at age 4 (i.e. one winter as eggs, one winter as fry in lakes, and two ocean winters), smaller proportions mature at ages 2, 3, and 5, with age structure varying among stocks. We modeled this process by calculating the number of individuals returning to spawn $R'_{i,t}$ in return year $t$ in stock as a function of the total number of adult recruits $R$ generated in previous brood years, multiplied by the proportion $p$ of fish that return at a given age $g$ 
 
@@ -107,13 +109,13 @@ maxGamma <- max(cuPar$tauCycAge)
 
 where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters, which scaled the size of deviations in Eq. A3, using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from $`r minGamma`$ - $`r maxGamma`$ among stocks.
 
-# Management procedure
+## 2. Management procedure
 
-## Forecast error
+### 2.1 Forecast error
 
 The simulation model assumes that total catch is split into stock-specific target catch, $C_{targ,i}$, proportional to each stock's abundance in a given year. Although forecast errors in estimates of return abundances are not explicitly included here, data used to parameterize outcome uncertainty incorporated forecast error, and for the mixed-stock fisheries, fish are assumed to be harvested proportionally to abundance. In the case of single-stock fisheries, fish are not harvested proportionally to their abundance, but there are no data available to parameterize the stock-specific forecast process independently of outcome uncertainty. Preliminary investigations, however, suggest that incorporating forecast error when allocating aggregate total allowable catch to stock-specific catch results in reduced performance of single-stock fisheries, relative to mixed-stock, due to intermittent overharvest (not shown).
 
-## Harvest control rules
+### 2.2 Harvest control rules
 
 ```{r genHCR, warnings=FALSE, messages=FALSE, fig.cap="Figure A1. Generic, abundance-based harvest control rule used to calculate target exploitation rates. Dashed vertical lines represent lower (red) and upper (green) fishery reference points equivalent to $0.4{S}_{MSY}$ and $0.8{S}_{MSY}$, respectively. The maximum exploitation rate is equal to ${u}_{MSY}$ (0.66 for the Summer Run MU aggregate)."}
 cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
@@ -152,7 +154,7 @@ We evaluated the impact of an alternative HCR, a total allowable mortality (TAM)
 ```{r frpTable, results="asis"}
 frpTable <- read.csv(here::here("data", "msTables", "frpTable.csv"))
 csas_table(frpTable,
-  caption = "Table S1.2. Fishery reference points (FRP; in millions of fish) and maximum exploitation rates (ER) for the generic harvest control rule utilized in the main text and the total allowable mortality rule. Note that the first year of the simulation is on the 4th cycle line.",
+  caption = "Table A2. Fishery reference points (FRP; in millions of fish) and maximum exploitation rates (ER) for the generic harvest control rule utilized in the main text and the total allowable mortality rule. Note that the first year of the simulation is on the 4th cycle line.",
   font_size = 20,
   col_names = c("Harvest Control Rule", "Cycle", "Low FRP", "High FRP", "Maximum Target ER")
 )

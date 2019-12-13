@@ -48,7 +48,7 @@ The simulation model included multiple sources of mortality in addition to the n
 
 Equation 3 $$ D_{i,t} \sim \text{lognormal}(d_{i}(R'_{i,t} - C_{i,t}), \sigma^2_{mort,i}) $$
 
-where $d$ represents the mean (range 0.04-0.60) and $\sigma_{mort}$ the standard deviation of observed stock-specific en route mortality (range 0.17-0.48) and $R'_{i,t}$ is return abundance (all age classes) to stock $i$ in return year $t$. En route mortality was parameterized using observed differences in estimated abundance between in-river and spawning ground sampling sites (2000-2016; Pacific Salmon Commission, unpublished data).
+where $d$ represents the mean (range among stocks 0.04-0.60) and $\sigma_{mort}$ the standard deviation of estimated stock-specific en route mortality (range among stocks 0.17-0.48) and $R'_{i,t}$ is return abundance (all age classes) to stock $i$ in return year $t$. En route mortality was parameterized using observed differences in estimated abundance between in-river and spawning ground sampling sites (2000-2016; Pacific Salmon Commission, unpublished data).
 
 Spawner abundance $S$ was then calculated as 
 

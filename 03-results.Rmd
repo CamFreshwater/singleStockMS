@@ -16,6 +16,8 @@ dirNames <- sapply(scenNames, function(x) paste(x, unique(simParTrim$species),
                                                 sep = "_"))
 
 #ID stocks included in CU-specific analyses
+# cuPar <- read.csv(here::here("data", "old", "fraserCUPars.csv"),
+#                   stringsAsFactors = F)
 cuPar <- read.csv(here::here("data/summOnlyCUPars.csv"), stringsAsFactors = F)
 summCUs <- cuPar %>% 
   mutate(abbStkName = abbreviate(stkName, minlength = 4)) %>% 
@@ -274,5 +276,5 @@ sing_catch <- med_decline %>%
 
 ```
 
-The timing of en route mortality also altered trade-offs among fishery allocations, with fully single-stock fisheries exhibiting the strongest declines in performance. For example, when en route mortality occurred before single-stock fisheries, median aggregate return abundance in single-stock fisheries declined by `r sing_rec$perc_dec` relative to the reference operating model (Fig. \@ref(fig:altTO)a,c). Similarly, median aggregate catch in fully single-stock fisheries declined by `r sing_catch$perc_dec` (Fig. \@ref(fig:altTO)a,c). Conversely, management procedures with intermediate fishery allocations or fully mixed-stock fisheries were less severely impacted.
+The timing of en route mortality also altered trade-offs among fishery allocations, with fully single-stock fisheries exhibiting the strongest declines in performance. For example, when en route mortality occurred before single-stock fisheries, median aggregate return abundance in the fully single-stock maangement procedure declined by `r sing_rec$perc_dec` relative to the reference operating model (Fig. \@ref(fig:altTO)a,c). Similarly, median aggregate catch in fully single-stock fisheries declined by `r sing_catch$perc_dec` (Fig. \@ref(fig:altTO)a,c). Conversely, management procedures with intermediate fishery allocations or fully mixed-stock fisheries were less severely impacted.
 

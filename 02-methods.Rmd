@@ -102,14 +102,14 @@ where $a$ and $b$ were calculated from target exploitation rates $u_{targ}$ and 
 Equation 9b $$ a_{f,i,t} = u_{targ,f,i,t}^2 ({\frac{1 - u_{targ,f,i,t}} {\sigma_{out}^2}} - {\frac{1}{u_{targ,f,i,t}}}) $$
 Equation 9c $$ b_{f,i,t} = a_{f,i,t}({\frac{1} {u_{targ,f,i,t}}} - 1).$$
 
-We parameterized $\sigma_{out}$ using observed deviations between target and realized exploitation rates in mixed-stock fisheries for Fraser River sockeye salmon MUs between 2006 and 2017. We fixed $\sigma_{out}$ at $`r simPar[["mixOUSig"]][1]`$ for both mixed- and single-stock fisheries since there is no evidence that terminal fisheries currently operating differ from marine fisheries in meeting management targets (J. Scroggie, DFO Fisheries Management, *personal communication*). 
+We estimated $\sigma_{out}$ as the difference between target and realized exploitation rates in mixed-stock fisheries for Fraser River sockeye salmon MUs between 2006 and 2017. We fixed $\sigma_{out}$ at $`r simPar[["mixOUSig"]][1]`$ for both mixed- and single-stock fisheries since marine and terminal fisheries currently operating have similar deviations from management targets (J. Scroggie, DFO Fisheries Management, *personal communication*). 
 
 Finally we calculated realized catches for each fishery ($C_{mix,i}$ and $C_{sing,i}$) by applying target exploitation rates to stock-specific return abundances as
 
 Equation 10a $$ C_{mix,i,t} = u_{mix,i,t}R'_{i,t} $$
 Equation 10b $$ C_{sing,i,t} = u_{sing,i,t}(R'_{i,t} - C_{mix,i,t}). $$)
 
-Note that Fraser River sockeye salmon are managed with a more conservative harvest control rule (total allowable mortality (TAM) rule), that accounts for cyclic abundance, overlapping run timings among MUs, en route mortality, and other system-specific management adjustments [@Pestal2011]. However the reference points associated with the TAM rule vary interannually and are informed by expert opinion, reducing its relevance to salmon fisheries in general. The TAM rule is summarized in Appendix A and we present the results of a secondary analysis comparing its performance to the generic HCR.
+Note that Fraser River sockeye salmon are managed with a more conservative harvest control rule (total allowable mortality (TAM) rule), that accounts for cyclic abundance, overlapping run timings among MUs, en route mortality, and other system-specific management adjustments [@Pestal2011]. However the reference points associated with the TAM rule vary interannually and are informed by expert opinion, reducing its relevance to salmon fisheries in general. The TAM rule is summarized in Appendix A and we present the results of a secondary analysis comparing its performance to the generic harvest control rule.
 
 ## 2.3 Alternative operating models
 
@@ -119,9 +119,9 @@ Equation 11 $$ C_{sing,i,t} = u_{sing,i,t}(R'_{i,t} - C_{mix,i,t} - D_{i,t}). $$
 
 Thus spawner abundance was calculated as
 
-Equation 12 $$ S_{i,t} = R'_{i,t} - C_{mix,i,t} - D_{i,t} - C_{sing,i,t}. $$
+Equation 12 $$ S_{i,t} = R'_{i,t} - C_{mix,i,t} - D_{i,t} - C_{sing,i,t}, $$
 
-This modification represents a scenario where single-stock fisheries are fully terminal. Terminal fishery impacts may be particularly relevant to aggregates such as Fraser River and Skeena River sockeye salmon where the large number of co-migrating stocks will constrain other means of increasing selectivity [@Grant2011; @Walters2008]. Since en route mortality in the Fraser River can be considerable in certain years [@Grant2011; @Cooke2004], the abundance of fish available to harvest will be lower in terminal fisheries relative to marine, altering trade-offs between conservation and catch objectives. 
+which represents a scenario where single-stock fisheries are fully terminal. Since en route mortality in the Fraser River can be considerable in certain years [@Grant2011; @Cooke2004], the abundance of fish available to harvest will be lower in terminal fisheries relative to marine, altering trade-offs between conservation and catch objectives. 
 
 Additionally, we completed sensitivity analyses to evaluate the impact of our assumptions about the magnitude of: temporal autocorrelation in recruitment deviations ($\tau$), error associated with estimating spawner abundance ($\sigma_{obs}$), outcome uncertainty ($\sigma_{out}$), and interannual variability in age-at-maturity ($\gamma$) and en route mortality ($\sigma_{mort}$) (Appendix B).
 

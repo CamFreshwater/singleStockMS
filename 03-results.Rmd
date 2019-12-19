@@ -50,7 +50,7 @@ refDat <- agDat %>%
          mp == "Generic") 
 ```
 
-Large allocations to mixed-stock, rather than single-stock, fisheries resulted in reductions in aggregate conservation performance, including median return abundance, median spawner abundance, and the mean proportion of stocks above their conservation benchmark (Fig. 1a-c). Conversely median aggregate catch and catch stability were maximized at intermediate allocations to mixed-stock fisheries (Fig. 1d,e). Impacts on conservation- and catch-based metrics were driven by differences in realized exploitation rates (Fig. 1f), which increased with mixed-stock fishery allocations.
+Large allocations to mixed-stock, rather than single-stock, fisheries resulted in reductions in aggregate conservation performance, including median (among simulation years) return abundance, median spawner abundance, and the mean proportion of stocks above their conservation benchmark (Fig. 1a-c). Conversely median aggregate catch and catch stability were maximized at intermediate allocations to mixed-stock fisheries (Fig. 1d,e). Impacts on conservation- and catch-based metrics were driven by differences in realized exploitation rates (Fig. 1f), which increased with mixed-stock fishery allocations.
 
 ```{r Fig1, warnings=FALSE, messages=FALSE, fig.cap="Changes in aggregate conservation- and catch-based performance metrics across a range of fishery allocations, i.e. range of proportional allocation of mixed- to single-stock where 1 and 0 are fully mixed- and fully single-stock fisheries, respectively. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials. Abundance and catch are in millions of fish."}
 colPal <- viridis::viridis(length(levels(refDat$ppnMixed)), begin = 0,
@@ -66,17 +66,18 @@ panelLabs <- data.frame(lab = c("a)", "b)", "c)", "d)", "e)", "f)"),
 agDotPlotList <- lapply(seq_along(agVarsToPlot), function(x) {
   dum <- refDat %>% 
     filter(var == agVarsToPlot[x])
-  p <- ggplot(dum, aes(x = ppnMixed, y = avg, ymin = lowQ, ymax = highQ,
-                          fill = ppnMixed)) +
+  p <- ggplot(dum, aes(x = ppnMixed, y = avg, ymin = lowQ, ymax = highQ)) +
     ylim(0.85 * min(dum$lowQ), max(dum$highQ)) +
     labs(x = "", y = unique(dum$labelledVar)) +
     geom_pointrange(shape = 21, fatten = 2.5, size = 2,
-                    position = position_dodge(width = 0.65)) +
+                    position = position_dodge(width = 0.65), 
+              fill = "white") +
     geom_text(data = panelLabs %>% filter(var == agVarsToPlot[x]),
               mapping = aes(x = 0.9, y = min(0.85 * dum$lowQ), label = lab,
                             vjust = 0),
-              show.legend = FALSE, inherit.aes = FALSE, size = 5) +
-    scale_fill_manual(guide = FALSE, values = colPal)
+              show.legend = FALSE, inherit.aes = FALSE, size = 5) 
+  # +
+  #   scale_fill_manual(guide = FALSE, values = colPal)
   if (unique(dum$var) %in% c("medRecRY", "medSpawners", "ppnCULower")) {
     p <- p +
       theme_sleekX(position = "top", axisSize = 15)

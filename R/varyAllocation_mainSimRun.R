@@ -107,6 +107,15 @@ for (i in seq_along(dirNames)) {
   toc()
 }
 
+dd <- readRDS(here::here("outputs", "simData", "genericRetro_stockRec_sockeye",
+                         "ref", "ref_1retro_genPA_aggTimeSeries.RData"))
+dumm <- dd[["Ag Recruits RY"]][60:110, ]
+which(dumm[dumm < 0.74])
+
+dumm <- dd[["targetExpRate"]][61:110, ]
+dumm[,1]
+
+
 #------------------------------------------------------------------------------
 
 # Aggregate PMs to plot

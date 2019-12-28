@@ -52,7 +52,7 @@ refDat <- agDat %>%
 
 Aggregate conservation performance declined as the proportion of total allowable catch allocated to mixed-stock fisheries increased. Median (among simulation years) return abundance, median spawner abundance, and the mean proportion of stocks above their conservation benchmark decreased as mixed-stock allocations grew (Fig. 1a-c). Conversely median aggregate catch and catch stability were maximized at intermediate allocations to mixed-stock fisheries (Fig. 1d,e). Impacts on conservation- and catch-based metrics were driven by differences in realized exploitation rates (Fig. 1f), which increased with mixed-stock fishery allocations.
 
-```{r Fig1, warnings=FALSE, messages=FALSE, fig.cap="Changes in aggregate conservation- and catch-based performance metrics across a range of fishery allocations, i.e. range of proportional allocation of mixed- to single-stock where 1 and 0 are fully mixed- and fully single-stock fisheries, respectively. Points represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials. Abundance and catch are in millions of fish."}
+```{r Fig1, warnings=FALSE, messages=FALSE, fig.cap="Changes in aggregate conservation- and catch-based performance metrics across a range of fishery allocations, i.e. range of proportional allocation of mixed- to single-stock where 1 and 0 are fully mixed- and fully single-stock fisheries, respectively. Circles represent medians and whiskers represent 90th percentile intervals among Monte Carlo trials. Abundance and catch are in millions of fish."}
 colPal <- viridis::viridis(length(levels(refDat$ppnMixed)), begin = 0,
                            end = 1, option = "plasma")
 # colPal <- grDevices::gray.colors(n = length(levels(refDat$ppnMixed)), 

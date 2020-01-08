@@ -4,7 +4,7 @@ header-includes:
 output:
   word_document:
     fig_caption: yes
-    reference_docx: templates/blankMS.docx
+    #reference_docx: templates/blankMS.docx
   # bookdown::pdf_document2:
   #   fig_caption: yes
   #   latex_engine: pdflatex

@@ -1,5 +1,5 @@
 Parameter,Description,Prior Distribution
 ,Intrinsic productivity parameter  (Eq. 1),NA
 ,Spawner abundance producing maximum number of recruits (i.e. inverse of density dependence parameter),NA
-,Precision (i.e. inverse of variance; Eq. S1.2a),NA
-,Lagged density dependence parameters (Larkin model only; Eq. S1.1),NA
+,Precision (i.e. inverse of variance; Eq. A1a),NA
+,Lagged density dependence parameters (Larkin model only; Eq. 2),NA

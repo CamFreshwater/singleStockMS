@@ -4,7 +4,7 @@ header-includes:
 output:
   word_document:
     fig_caption: yes
-    reference_docx: templates/blankMS.docx
+    #reference_docx: templates/blankMS.docx
   # bookdown::pdf_document2:
   #   fig_caption: yes
   #   latex_engine: pdflatex
@@ -100,14 +100,14 @@ Equation A2 $$ R'_{i,t} = R_{i,t-2}p_{2,i,t-2} + R_{i,t-3}p_{3,i,t-3} + R_{i,t-4
 
 We incorporated multivariate logistic variation in the proportion of mature fish returning at each age
 
-Equation A3 $$ p_{g,i,y} = \frac{ \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} {\sum_{2}^{5} \overline{p}_{g,y} e^{\gamma_i \epsilon_{g,i,y}}} $$
+Equation A3 $$ p_{g,i,y} = \frac{ \overline{p}_{g,y} e^{\gamma_i \omega_{g,i,y}}} {\sum_{2}^{5} \overline{p}_{g,y} e^{\gamma_i \omega_{g,i,y}}} $$
 
 ```{r gammas, include=FALSE}
 minGamma <- min(cuPar$tauCycAge)
 maxGamma <- max(cuPar$tauCycAge)
 ```
 
-where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\epsilon_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters, which scaled the size of deviations in Eq. A3, using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from $`r minGamma`$ - $`r maxGamma`$ among stocks.
+where $y$ is the brood year (equal to $t-2$, $t-3$, $t-4$ or $t-5$ in Eqn. 4), the summation in the denominator is over ages g= 2 to 5, $\overline{p}_{g,y}$ is the stock-specific mean proportion of adult fish that return at a given age, $\gamma$ is a parameter controlling interannual variability in the proportion returning at each age, and $\omega_{g,i,y} \sim \text{normal}(0, 1)$ [@Schnute1995; @Holt2011]. We estimated stock-specific $\gamma_i$ parameters, which scaled the size of deviations in Eq. A3, using a simple grid search of Fraser River sockeye salmon ages at maturity. Estimates of $\gamma_i$ ranged from $`r minGamma`$ - $`r maxGamma`$ among stocks.
 
 ## 2. Management procedure
 

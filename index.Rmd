@@ -27,7 +27,7 @@ output:
 knit: bookdown::render_book
 link-citations: true
 bibliography: bib/ms_singleStock.bib
-csl: csl/conservation-biology.csl # or csl/csas-french.csl for French
+csl: csl/fisheries-research.csl # or csl/csas-french.csl for French
 # Any extra LaTeX code for the header:
 # header-includes:
 # - \usepackage{tikz}

@@ -18,7 +18,7 @@ Options to increase stock selectivity are limited when a salmon aggregate contai
 
 ## Acknowledgements
 
-This work would not have been possible without the efforts of the many biologists and technicians who collected the Fraser River sockeye salmon catch and escapement data. We are grateful to Brendan Connors, Micahel Folkes, James Robinson, and Travis Tai for helpful advice. We also thank Catarina Wor for valuable feedback on an earlier draft of the manuscript, Catherine Michielsens for assistance implementing recursive Bayes stock recruit models, and two anonymous reviewers, whose comments greatly improved this manuscript's quality. This project was supported by Fisheries and Oceans Canada through the Strategic Program for Ecosystem-based Research and Advice (SPERA).
+This work would not have been possible without the efforts of the many biologists and technicians who collected the Fraser River sockeye salmon catch and escapement data. We are grateful to Brendan Connors, Micahel Folkes, James Robinson, and Travis Tai for helpful advice. We also thank Catarina Wor for valuable feedback on an earlier draft of the manuscript, Catherine Michielsens for assistance implementing recursive Bayes stock recruit models, and two anonymous reviewers and Andre Punt, whose comments greatly improved this manuscript's quality. This project was supported by Fisheries and Oceans Canada through the Strategic Program for Ecosystem-based Research and Advice (SPERA).
 
 ## Appendix A. Supplementary methods
 

@@ -22,7 +22,7 @@ knitr-cache
 myNotes.*
 outputs/diagnostics
 outputs/simData
-outputs/srAnalysis/figs/
+outputs/srAnalysis/
 data/workingFinalSimRun
 data/old
 data/recursiveLarkinMCMCPars.csv
